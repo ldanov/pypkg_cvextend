@@ -60,12 +60,12 @@ def process_grid_result(grid_result, step_names, data_name):
     # due to specifying steps in Pipeline as object instances,
     # results contain the instances themselves
     # instead return class name as string
-    # for step in full_step_names:
-    #     object_class = []
-    #     for obj in grid_res[step]:
-    #         object_class.append(_get_object_fullname(obj))
-    #     object_class = numpy.array(object_class)
-    #     grid_res[step] = object_class
+    for step in full_step_names:
+        object_class = []
+        for obj in grid_res[step]:
+            object_class.append(_get_object_fullname(obj))
+        object_class = numpy.array(object_class)
+        grid_res[step] = object_class
 
     return grid_res
 
