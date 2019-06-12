@@ -5,30 +5,31 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-import itertools
+# from itertools import product as iter_product
 
-# import from https://stackoverflow.com/a/42271829/10960229
-def generate_param_grids(steps, param_grids):
+# # import from https://stackoverflow.com/a/42271829/10960229
+# def generate_param_grids(steps, param_grids):
 
-    final_params = []
+#     final_params = []
+#     # step_keys, step_values = steps.items()
 
-    for estimator_names in itertools.product(*steps.values()):
-        current_grid = {}
+#     for estimator_names in iter_product(*steps.values()):
+#         current_grid = {}
 
-        # Step_name and estimator_name should correspond
-        # i.e preprocessor must be from pca and select.
-        for step_name, estimator_name in zip(steps.keys(), estimator_names):
-            for param, value in param_grids.get(estimator_name).items():
-                if param == 'pipe_step_instance':
-                    # Set actual estimator in pipeline
-                    current_grid[step_name] = [value]
-                else:
-                    # Set parameters corresponding to above estimator
-                    current_grid[step_name + '__' + param] = value
-        # Append this dictionary to final params
-        final_params.append(current_grid)
+#         # Step_name and estimator_name should correspond
+#         # i.e preprocessor must be from pca and select.
+#         for step_name, estimator_name in zip(steps.keys(), estimator_names):
+#             for param, value in param_grids.get(estimator_name).items():
+#                 if param == 'pipe_step_instance':
+#                     # Set actual estimator in pipeline
+#                     current_grid[step_name] = [value]
+#                 else:
+#                     # Set parameters corresponding to above estimator
+#                     current_grid[step_name + '__' + param] = value
+#         # Append this dictionary to final params
+#         final_params.append(current_grid)
 
-    return final_params
+#     return final_params
 
 # add all the estimators you want to "OR" in single key
 # use OR between `pca` and `select`,

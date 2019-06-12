@@ -13,8 +13,6 @@ def get_sv_SMOTE():
 def get_smote_like():
     pass
 
-
-
 def test__validate_module():
     a = get_imb_learn_SMOTE()
     b = get_sv_SMOTE()
