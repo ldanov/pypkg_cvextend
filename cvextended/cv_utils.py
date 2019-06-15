@@ -6,19 +6,14 @@
 # License: -
 
 
-import pandas
-import numpy
-import copy
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.metrics import accuracy_score, f1_score, make_scorer
+from hmeasure import h_score
 
-# from imblearn.pipeline import Pipeline
-from .base import _expand_param_grid
-from .base import get_grid, process_grid_result
+from .base import _expand_param_grid, get_grid, process_grid_result
 from .grid_search import NestedEvaluationGrid
 from .score_grid import ScoreGrid
 
-from sklearn.metrics import make_scorer, accuracy_score, f1_score
-from hmeasure import h_score
 # TODO: score_selection as a Class
 _default_score_selection = [{'score_name': 'H-Measure', 'score_search': 'rank_test_H-Measure',
                              'selector': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)},
