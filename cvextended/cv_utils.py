@@ -13,8 +13,8 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 # from imblearn.pipeline import Pipeline
 from .base import _expand_param_grid
-from .base import get_grid, process_grid_result, transform_score_selection
-from .grid_search import NestedGrid
+from .base import get_grid, process_grid_result
+from .grid_search import NestedEvaluationGrid
 from .score_grid import ScoreGrid
 
 from sklearn.metrics import make_scorer, accuracy_score, f1_score
@@ -32,7 +32,8 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
               scorer_dict, cv_rand_states: list = [], k_folds: int = 5,
               cv_n_jobs: int = 1, verbose_cv: int = 2):
 
-    p_grid_exp, step_names = _expand_param_grid(steps=steps,
+    step_names = list(steps.keys())
+    p_grid_exp = _expand_param_grid(steps=steps,
                                                 param_grid=param_grid)
 
     all_scores = []
@@ -59,8 +60,9 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        verbose_in_cv: int = 2):
 
     result_collector = []
-    p_grid_exp, step_names = _expand_param_grid(steps=steps,
+    p_grid_exp = _expand_param_grid(steps=steps,
                                                 param_grid=param_grid)
+    step_names = list(steps.keys())
     scgrid = ScoreGrid(score_selection)
     scorer_dict = scgrid.get_sklearn_dict()
     # TODO: expose inner cv random_states
@@ -92,7 +94,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
 
             grid_inner.fit(X_train, y_train)
 
-            grid_evaluate = NestedGrid(grid_inner, score_selection, step_names)
+            grid_evaluate = NestedEvaluationGrid(grid_inner, scgrid, step_names)
 
             outer_score = grid_evaluate.refit_score(X_train=X_train,
                                                     y_train=y_train,

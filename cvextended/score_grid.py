@@ -11,24 +11,24 @@ from sklearn.metrics import scorer
 class ScoreGrid(object):
     _expected_keys = [
         {
+            # user-defined name that will be used in generating result df columnname
             'name': 'score_name',
             'type': str
         },
         {
-            'name': 'score_criterion_name',
+            # which column or key to use when looking for metric
+            'name': 'score_key',
+            'type': str
+        },
+        {   
+            # which pandas-known string callable to give to call transform on results
+            'name':  'score_criteria',
             'type': str
         },
         {
-            'name':  'score_criterion_selector',
-            'type': str
-        },
-        {
+            # scorer object itself
             'name': 'scorer',
             'type': scorer._BaseScorer
-        },
-        {
-            'name': 'use_for_selection',
-            'type': bool
         }]
 
     def __init__(self, score_selection):

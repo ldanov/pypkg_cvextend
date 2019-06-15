@@ -15,18 +15,18 @@ import copy
 def get_correct_data():
     sc_selection = [
         {
-            'score_name': 'H-Measure', 'score_criterion_name': 'rank_test_H-Measure',
-            'score_criterion_selector': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
+            'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
+            'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
             'use_for_selection': True
         },
         {
-            'score_name': 'Accuracy', 'score_criterion_name': 'rank_test_Accuracy',
-            'score_criterion_selector': 'min', 'scorer': make_scorer(accuracy_score),
+            'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
+            'score_criteria': 'min', 'scorer': make_scorer(accuracy_score),
             'use_for_selection': False
         },
         {
-            'score_name': 'F1-Score', 'score_criterion_name': 'rank_test_F1-Score',
-            'score_criterion_selector': 'min', 'scorer': make_scorer(f1_score),
+            'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
+            'score_criteria': 'min', 'scorer': make_scorer(f1_score),
             'use_for_selection': True
         }
     ]
@@ -49,8 +49,8 @@ _cases_to_run = [
 @pytest.fixture(params=_cases_to_run)
 def get_wrong_input_data(request):
     _default_case = [{
-        'score_name': 'H-Measure', 'score_criterion_name': 'rank_test_H-Measure',
-        'score_criterion_selector': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
+        'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
+        'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
         'use_for_selection': True
     }]
 
@@ -61,7 +61,7 @@ def get_wrong_input_data(request):
     case2[0]['scorer'] = str(case2[0]['scorer'])
 
     case3 = copy.deepcopy(_default_case)
-    case3[0]['use_for_selection'] = str(case2[0]['use_for_selection'])
+    case3[0]['score_criteria'] = min
 
     sc_selection = {
         'case1': case1,

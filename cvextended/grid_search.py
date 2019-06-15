@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""ExpandGridResults class for running nested cross-validation of sampling methods"""
+"""NestedEvaluationGrid class for running nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -11,41 +11,46 @@ from .base import _get_object_fullname
 import copy
 import pandas
 
-class NestedGrid(object):
-    def __init__(self, gridcv, score_selection, step_names):
+
+class NestedEvaluationGrid(object):
+    def __init__(self, gridcv, score_grid, group_names):
         if not isinstance(gridcv, (GridSearchCV, RandomizedSearchCV)):
             TypeError("grid is does not inherit from BaseSearchCV!")
-        if not isinstance(score_selection, ScoreGrid):
-            TypeError("score_selection is does not inherit from ScoreGrid!")
-        self.grid = gridcv
-        self.score_selection = score_selection
-        self.step_names = step_names
+        if not isinstance(score_grid, ScoreGrid):
+            TypeError("score_grid is does not inherit from ScoreGrid!")
+        # self.grid = gridcv
+        self.cv_results = copy.deepcopy(gridcv.cv_results_)
+        self.cv_estimator = copy.deepcopy(gridcv.estimator)
+        self.score_grid = score_grid
+        self.groups = group_names
         self.scorers_best_params = None
         self.fitted_estimators = None
         self.final_result = None
 
     def refit_score(self, X_train, y_train, X_test, y_test, **kwargs):
+        self.add_metainfo_results()
         self.get_best_params()
         self.get_fitted_estimators(X_train, y_train)
         self.get_scores(X_test, y_test, **kwargs)
         if self.final_result is not None:
             return self.final_result
 
-    def enchance_score(self, **kwargs):
-        eval_df = copy.deepcopy(pandas.DataFrame(self.grid.cv_results_))
-        eval_df, types_all_steps = self.add_class_name(eval_df, self.step_names)
-        raise NotImplementedError
+    def _add_class_name(self, df, groups):
+        group_type_keys = []
+        for group in groups:
+            type_group = 'type_' + group
+            group_type_keys.append(type_group)
+            param_group = 'param_' + group
+            classes = df[param_group].values
+            df[type_group] = [_get_object_fullname(x) for x in classes]
+        return df, group_type_keys
 
-
-    def add_class_name(self, df, step_names):
-        types_all_steps = []
-        for step in step_names:
-            type_step = 'type_' + step
-            types_all_steps.append(type_step)
-            param_step = 'param_' + step
-            classes = df[param_step].values
-            df[type_step] = [_get_object_fullname(x) for x in classes]
-        return df, types_all_steps
+    def add_metainfo_results(self):
+        eval_df = copy.deepcopy(pandas.DataFrame(self.cv_results))
+        eval_df, group_type_keys = self._add_class_name(eval_df, self.groups)
+        self.eval_df = eval_df
+        self.group_type_keys = group_type_keys
+        return self
 
     def get_best_params(self):
         '''
@@ -54,20 +59,20 @@ class NestedGrid(object):
         the best hyperparameters for each combination of score and Pipeline step
         '''
         # TODO: replace pandas with numpy
-        eval_df = copy.deepcopy(pandas.DataFrame(self.grid.cv_results_))
-        eval_df, types_all_steps = self.add_class_name(eval_df, self.step_names)
+        eval_df = self.eval_df
         per_score = []
 
-        for score_type in self.score_selection:
+        for score_type in self.score_grid.get_selection_scores():
 
-            score_key = score_type['score_search']
-            selector = score_type['selector']
+            score_key = score_type['score_key']
+            score_criteria = score_type['score_criteria']
 
             # which columns to select
-            retr_cols = types_all_steps + ['params']
-            # for each unique value in each step from step_names
-            # return those entries, where score_key is selector
-            idx = eval_df.groupby(types_all_steps)[score_key].transform(selector)
+            retr_cols = self.group_type_keys + ['params']
+            # for each unique value in each group from groups
+            # return entries where score_key corresponds to score_criteria
+            idx = eval_df.groupby(self.group_type_keys)[
+                score_key].transform(score_criteria)
             score_best_params = copy.deepcopy(
                 eval_df.loc[idx == eval_df[score_key], retr_cols])
 
@@ -87,7 +92,7 @@ class NestedGrid(object):
         '''
         fitted_estimators = copy.deepcopy(self.scorers_best_params)
         for best_param in fitted_estimators:
-            cloned_estim = copy.deepcopy(self.grid.estimator)
+            cloned_estim = copy.deepcopy(self.cv_estimator)
             cloned_estim.set_params(**best_param['params'])
             cloned_estim.fit(X_train, y_train)
             best_param['estimator'] = cloned_estim
@@ -112,6 +117,3 @@ class NestedGrid(object):
                 estimator_dict[key] = value
         self.final_result = final_result
         return self
-
-
-    

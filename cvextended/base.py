@@ -13,22 +13,13 @@ import numpy
 
 def _expand_param_grid(steps, param_grid):
     param_grid_expanded = generate_param_grids(steps, param_grid)
-    step_names = list(steps.keys())
 
     try:
         _ = ParameterGrid(param_grid_expanded)
     except Exception as e:
         raise e
 
-    return param_grid_expanded, step_names
-
-
-def _get_object_fullname(o):
-    module = o.__class__.__module__
-    if module is None or module == str.__class__.__module__:
-        return o.__class__.__name__
-    else:
-        return module + '.' + o.__class__.__name__
+    return param_grid_expanded
 
 
 def get_grid(estimator, param_grid, scoring, n_splits,
@@ -49,6 +40,14 @@ def get_grid(estimator, param_grid, scoring, n_splits,
         verbose=verbose
     )
     return grid
+
+
+def _get_object_fullname(o):
+    module = o.__class__.__module__
+    if module is None or module == str.__class__.__module__:
+        return o.__class__.__name__
+    else:
+        return module + '.' + o.__class__.__name__
 
 
 def process_grid_result(grid_result, step_names, data_name):
@@ -92,10 +91,3 @@ def generate_param_grids(steps, param_grids):
         final_params.append(current_grid)
 
     return final_params
-
-def transform_score_selection(score_selection):
-    sklearn_score_dict = {}
-    for score in score_selection:
-        sklearn_score_dict[score['score_name']] = score['scorer']
-    
-    return sklearn_score_dict
