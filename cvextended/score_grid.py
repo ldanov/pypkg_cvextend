@@ -20,7 +20,7 @@ class ScoreGrid(object):
             'name': 'score_key',
             'type': str
         },
-        {   
+        {
             # which pandas-known string callable to give to call transform on results
             'name':  'score_criteria',
             'type': str
@@ -47,13 +47,3 @@ class ScoreGrid(object):
             sklearn_score_dict[score['score_name']] = score['scorer']
 
         return sklearn_score_dict
-
-    def get_selection_scores(self):
-        '''
-        returns array of dicts as used by NestedGrid
-        '''
-        selection_scores = []
-        for score in self.score_selection:
-            if score['use_for_selection']:
-                selection_scores.append(score)
-        return selection_scores

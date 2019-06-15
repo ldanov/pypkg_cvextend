@@ -16,18 +16,15 @@ def get_correct_data():
     sc_selection = [
         {
             'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-            'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
-            'use_for_selection': True
+            'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
         },
         {
             'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
-            'score_criteria': 'min', 'scorer': make_scorer(accuracy_score),
-            'use_for_selection': False
+            'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)
         },
         {
             'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
-            'score_criteria': 'min', 'scorer': make_scorer(f1_score),
-            'use_for_selection': True
+            'score_criteria': 'min', 'scorer': make_scorer(f1_score)
         }
     ]
     exp_sklearn = {
@@ -35,8 +32,8 @@ def get_correct_data():
         'Accuracy': make_scorer(accuracy_score),
         'F1-Score': make_scorer(f1_score)
     }
-    exp_selection = [sc_selection[0], sc_selection[2]]
-    return sc_selection, exp_sklearn, exp_selection
+
+    return sc_selection, exp_sklearn
 
 
 _cases_to_run = [
@@ -50,8 +47,7 @@ _cases_to_run = [
 def get_wrong_input_data(request):
     _default_case = [{
         'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-        'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0),
-        'use_for_selection': True
+        'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
     }]
 
     case1 = copy.deepcopy(_default_case)
@@ -77,21 +73,14 @@ def get_wrong_input_data(request):
 
 
 def test_score_grid_correct():
-    correct_input, correct_out_sklearn, correct_out_select = get_correct_data()
-    print(correct_out_select)
+    correct_input, correct_out_sklearn = get_correct_data()
 
     sc_grid = ScoreGrid(correct_input)
     out_sklearn = sc_grid.get_sklearn_dict()
-    out_select = sc_grid.get_selection_scores()
-    print(out_select)
 
     assert correct_out_sklearn.keys() == out_sklearn.keys()
     for key, value in out_sklearn.items():
         assert isinstance(value, correct_out_sklearn[key].__class__)
-    for returned_dict, correct_dict in zip(out_select, correct_out_select):
-        assert returned_dict.keys() == correct_dict.keys()
-        for key, value in returned_dict.items():
-            assert isinstance(value, correct_dict[key].__class__)
 
 
 def test_score_grid_wrong_input(get_wrong_input_data):

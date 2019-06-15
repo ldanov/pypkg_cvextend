@@ -72,7 +72,6 @@ def process_grid_result(grid_result, step_names, data_name):
 def generate_param_grids(steps, param_grids):
 
     final_params = []
-    # step_keys, step_values = steps.items()
 
     for estimator_names in iter_product(*steps.values()):
         current_grid = {}

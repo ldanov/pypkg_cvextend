@@ -60,8 +60,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        verbose_in_cv: int = 2):
 
     result_collector = []
-    p_grid_exp = _expand_param_grid(steps=steps,
-                                                param_grid=param_grid)
+    p_grid_exp = _expand_param_grid(steps=steps, param_grid=param_grid)
     step_names = list(steps.keys())
     scgrid = ScoreGrid(score_selection)
     scorer_dict = scgrid.get_sklearn_dict()

@@ -35,19 +35,17 @@ class NestedEvaluationGrid(object):
         if self.final_result is not None:
             return self.final_result
 
-    def _add_class_name(self, df, groups):
+    def add_metainfo_results(self):
+        eval_df = copy.deepcopy(pandas.DataFrame(self.cv_results))
+
         group_type_keys = []
-        for group in groups:
+        for group in self.groups:
             type_group = 'type_' + group
             group_type_keys.append(type_group)
             param_group = 'param_' + group
-            classes = df[param_group].values
-            df[type_group] = [_get_object_fullname(x) for x in classes]
-        return df, group_type_keys
+            classes = eval_df[param_group].values
+            eval_df[type_group] = [_get_object_fullname(x) for x in classes]
 
-    def add_metainfo_results(self):
-        eval_df = copy.deepcopy(pandas.DataFrame(self.cv_results))
-        eval_df, group_type_keys = self._add_class_name(eval_df, self.groups)
         self.eval_df = eval_df
         self.group_type_keys = group_type_keys
         return self
@@ -62,7 +60,7 @@ class NestedEvaluationGrid(object):
         eval_df = self.eval_df
         per_score = []
 
-        for score_type in self.score_grid.get_selection_scores():
+        for score_type in self.score_grid.score_selection:
 
             score_key = score_type['score_key']
             score_criteria = score_type['score_criteria']
