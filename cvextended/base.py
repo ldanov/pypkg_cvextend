@@ -70,17 +70,6 @@ def process_grid_result(grid_result, step_names, data_name):
     return grid_res
 
 
-# def get_model_scores(data_name: str, X, y,
-#                      grid, step_names):
-
-#     grid.fit(X, y)
-#     grid_result_df = process_grid_result(grid.cv_results_,
-#                                          step_names=step_names,
-#                                          data_name=data_name)
-
-#     return grid_result_df
-
-
 def generate_param_grids(steps, param_grids):
 
     final_params = []
@@ -110,13 +99,3 @@ def transform_score_selection(score_selection):
         sklearn_score_dict[score['score_name']] = score['scorer']
     
     return sklearn_score_dict
-
-def add_class_name(df, step_names):
-    types_all_steps = []
-    for step in step_names:
-        type_step = 'type_' + step
-        types_all_steps.append(type_step)
-        param_step = 'param_' + step
-        classes = df[param_step].values
-        df[type_step] = [_get_object_fullname(x) for x in classes]
-    return df, types_all_steps

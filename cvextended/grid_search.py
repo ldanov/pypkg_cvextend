@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 
-"""Basic functions for running nested cross-validation of sampling methods"""
+"""ExpandGridResults class for running nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->
 # License: -
 
-# from sklearn.model_selection import GridSearchCV, StratifiedKFold, ParameterGrid
-# from itertools import product as iter_product
-# import copy
-# import numpy
-
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from .score_grid import ScoreGrid
 from .base import _get_object_fullname
-import copy, pandas
+import copy
+import pandas
 
-class ExpandGrid(object):
+class NestedGrid(object):
     def __init__(self, gridcv, score_selection, step_names):
         if not isinstance(gridcv, (GridSearchCV, RandomizedSearchCV)):
             TypeError("grid is does not inherit from BaseSearchCV!")
+        if not isinstance(score_selection, ScoreGrid):
+            TypeError("score_selection is does not inherit from ScoreGrid!")
         self.grid = gridcv
         self.score_selection = score_selection
         self.step_names = step_names
@@ -31,6 +30,11 @@ class ExpandGrid(object):
         self.get_scores(X_test, y_test, **kwargs)
         if self.final_result is not None:
             return self.final_result
+
+    def enchance_score(self, **kwargs):
+        eval_df = copy.deepcopy(pandas.DataFrame(self.grid.cv_results_))
+        eval_df, types_all_steps = self.add_class_name(eval_df, self.step_names)
+        raise NotImplementedError
 
 
     def add_class_name(self, df, step_names):

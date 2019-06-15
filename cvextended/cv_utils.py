@@ -6,18 +6,20 @@
 # License: -
 
 
-from .base import add_class_name
 import pandas
 import numpy
 import copy
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
-from sklearn.metrics import make_scorer, accuracy_score, f1_score
-from hmeasure import h_score
+
 # from imblearn.pipeline import Pipeline
 from .base import _expand_param_grid
 from .base import get_grid, process_grid_result, transform_score_selection
-from .grid_search import ExpandGrid
+from .grid_search import NestedGrid
+from .score_grid import ScoreGrid
 
+from sklearn.metrics import make_scorer, accuracy_score, f1_score
+from hmeasure import h_score
+# TODO: score_selection as a Class
 _default_score_selection = [{'score_name': 'H-Measure', 'score_search': 'rank_test_H-Measure',
                              'selector': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)},
                             {'score_name': 'Accuracy', 'score_search': 'rank_test_Accuracy',
@@ -53,14 +55,18 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
 def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        n_repeats, k_inner_folds=5, k_outer_folds=2,
                        score_selection=_default_score_selection,
-                       inner_cv_n_jobs: int = 1, verbose_out_cv: int = 2, verbose_in_cv: int = 2):
+                       inner_cv_n_jobs: int = 1, verbose_out_cv: int = 2, 
+                       verbose_in_cv: int = 2):
 
     result_collector = []
     p_grid_exp, step_names = _expand_param_grid(steps=steps,
                                                 param_grid=param_grid)
-
-    scorer_dict = transform_score_selection(score_selection)
-    # TODO: expose inner and outer cv random_states
+    scgrid = ScoreGrid(score_selection)
+    scorer_dict = scgrid.get_sklearn_dict()
+    # TODO: expose inner cv random_states
+    # TODO: expose outer cv random_states
+    # TODO: store also inner cv results
+    # TODO: intermediary saving of results and restart from point
     for i in range(n_repeats):
 
         outer_cv = StratifiedKFold(n_splits=k_outer_folds,
@@ -68,7 +74,6 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                                    random_state=i)
         outer_fold = 0
         for train_index, test_index in outer_cv.split(X, y):
-            outer_fold += 1
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
             additional_info = {
@@ -87,7 +92,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
 
             grid_inner.fit(X_train, y_train)
 
-            grid_evaluate = ExpandGrid(grid_inner, score_selection, step_names)
+            grid_evaluate = NestedGrid(grid_inner, score_selection, step_names)
 
             outer_score = grid_evaluate.refit_score(X_train=X_train,
                                                     y_train=y_train,
@@ -96,5 +101,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                                                     **additional_info)
 
             result_collector = result_collector + outer_score
+
+            outer_fold += 1
 
     return result_collector
