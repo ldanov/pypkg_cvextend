@@ -5,10 +5,13 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-from sklearn.model_selection import GridSearchCV, StratifiedKFold, ParameterGrid
-from itertools import product as iter_product
 import copy
+from itertools import product as iter_product
+
 import numpy
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import ParameterGrid
+from sklearn.model_selection import StratifiedKFold
 
 
 def _expand_param_grid(steps, param_grid):

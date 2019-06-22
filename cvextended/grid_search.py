@@ -5,11 +5,13 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-from .score_grid import ScoreGrid
-from .base import _get_object_fullname
 import copy
+
 import pandas
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+
+from .base import _get_object_fullname
+from .score_grid import ScoreGrid
 
 
 class NestedEvaluationGrid(object):

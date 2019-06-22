@@ -40,7 +40,7 @@ class ScoreGrid(object):
 
     def get_sklearn_dict(self):
         '''
-        Returns a dict of scores as expected by sklearn.GridSearchCV scoring param
+        Returns a dict of scores as expected by sklearn.BaseSearchCV scoring param
         '''
         sklearn_score_dict = {}
         for score in self.score_selection:
