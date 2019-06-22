@@ -5,7 +5,16 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-from sklearn.metrics import scorer
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import make_scorer, scorer
+from hmeasure import h_score
+
+_default_score_selection = [{'score_name': 'H-Measure', 'score_search': 'rank_test_H-Measure',
+                             'selector': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=1)},
+                            {'score_name': 'Accuracy', 'score_search': 'rank_test_Accuracy',
+                             'selector': 'min', 'scorer': make_scorer(accuracy_score)},
+                            {'score_name': 'F1-Score', 'score_search': 'rank_test_F1-Score',
+                             'selector': 'min', 'scorer': make_scorer(f1_score)}]
 
 
 class ScoreGrid(object):
@@ -31,7 +40,7 @@ class ScoreGrid(object):
             'type': scorer._BaseScorer
         }]
 
-    def __init__(self, score_selection):
+    def __init__(self, score_selection=_default_score_selection):
         for score in score_selection:
             for exp_k in self._expected_keys:
                 if not isinstance(score[exp_k['name']], exp_k['type']):
