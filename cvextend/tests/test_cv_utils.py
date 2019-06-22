@@ -16,6 +16,7 @@ from hmeasure import h_score
 from sklearn.metrics import accuracy_score, f1_score, make_scorer
 
 from ..cv_utils import repeated_nested_cv
+from ..score_grid import ScoreGrid
 
 # from imblearn.over_sampling import SMOTE
 
@@ -39,12 +40,16 @@ def get_test1_settings():
             'max_features': [1, 5, 10]
         }
     }
-    scorer_selection = [{'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-                         'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)},
-                        {'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
-                         'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
-                        {'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
-                         'score_criteria': 'min', 'scorer': make_scorer(f1_score)}]
+    scorer_selection_input = [
+        {'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
+         'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=1)},
+        {'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
+         'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
+        {'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
+         'score_criteria': 'min', 'scorer': make_scorer(f1_score)}
+    ]
+
+    scorer_selection = ScoreGrid(scorer_selection_input)
 
     pipe = Pipeline([('preprocessor', None), ('classifier', None)])
     X, y = load_breast_cancer(return_X_y=True)
