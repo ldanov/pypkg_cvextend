@@ -14,17 +14,6 @@ from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection import StratifiedKFold
 
 
-def _expand_param_grid(steps, param_grid):
-    param_grid_expanded = generate_param_grids(steps, param_grid)
-
-    try:
-        _ = ParameterGrid(param_grid_expanded)
-    except Exception as e:
-        raise e
-
-    return param_grid_expanded
-
-
 def get_grid(estimator, param_grid, scoring, n_splits,
              random_state, refit=False, verbose=1):
 
@@ -72,7 +61,7 @@ def process_grid_result(grid_result, step_names, data_name):
     return grid_res
 
 
-def generate_param_grids(steps, param_grids):
+def generate_param_grid(steps, param_grid):
 
     final_params = []
 
@@ -82,7 +71,7 @@ def generate_param_grids(steps, param_grids):
         # Step_name and estimator_name should correspond
         # i.e preprocessor must be from pca and select.
         for step_name, estimator_name in zip(steps.keys(), estimator_names):
-            for param, value in param_grids.get(estimator_name).items():
+            for param, value in param_grid.get(estimator_name).items():
                 if param == 'pipe_step_instance':
                     # Set actual estimator in pipeline
                     current_grid[step_name] = [value]
@@ -92,4 +81,8 @@ def generate_param_grids(steps, param_grids):
         # Append this dictionary to final params
         final_params.append(current_grid)
 
+    try:
+        ParameterGrid(final_params)
+    except Exception as e:
+        raise e
     return final_params

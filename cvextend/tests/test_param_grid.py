@@ -7,7 +7,7 @@
 
 import pytest
 
-from ..base import generate_param_grids
+from ..base import generate_param_grid
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
@@ -37,7 +37,7 @@ def get_test_case():
     return pipeline_steps, all_params_grid
 
 
-def test_generate_param_grids():
+def test_generate_param_grid():
 
     steps, pgrid = get_test_case()
 
@@ -57,7 +57,7 @@ def test_generate_param_grids():
         }
     ]
 
-    result = generate_param_grids(steps, pgrid)
+    result = generate_param_grid(steps, pgrid)
     for d1, d2 in zip(result, exp_result):
         for key in d1.keys():
             if key != "classifier":

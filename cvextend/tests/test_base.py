@@ -3,10 +3,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import ParameterGrid
 from sklearn.svm import SVC
 
-from ..base import generate_param_grids
+from ..base import generate_param_grid
 
 
-def test_generate_param_grids():
+def test_generate_param_grid():
     pipeline_steps = {'preprocessor': ['skip'],
                       'classifier': ['svm', 'rf']}
     all_params_grid = {
@@ -25,13 +25,13 @@ def test_generate_param_grids():
             'max_features': [1, 5, 10, 20]
         }
     }
-    out = generate_param_grids(
-        steps=pipeline_steps, param_grids=all_params_grid)
+    out = generate_param_grid(
+        steps=pipeline_steps, param_grid=all_params_grid)
     try:
         _ = ParameterGrid(out)
     except:
         pytest.fail('unexpected test fail while trying \
-             to use generate_param_grids output in ParameterGrid')
+             to use generate_param_grid output in ParameterGrid')
 
     assert len(out) == 2
     assert isinstance(out[0], dict)

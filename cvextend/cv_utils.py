@@ -8,7 +8,7 @@
 
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
-from .base import _expand_param_grid, get_grid, process_grid_result
+from .base import generate_param_grid, get_grid, process_grid_result
 from .grid_search import NestedEvaluationGrid
 from .score_grid import ScoreGrid
 
@@ -20,7 +20,7 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
               cv_n_jobs: int = 1, verbose_cv: int = 2):
 
     step_names = list(steps.keys())
-    p_grid_exp = _expand_param_grid(steps=steps,
+    p_grid_exp = generate_param_grid(steps=steps,
                                     param_grid=param_grid)
 
     all_scores = []
@@ -39,7 +39,8 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
         all_scores.append(run_score)
     return all_scores
 
-
+# TODO: outer cv given as instantiated object
+# TODO: inner cv grid given as instantiated object
 def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        n_repeats, k_inner_folds=5, k_outer_folds=2,
                        score_selection=ScoreGrid(),
@@ -47,7 +48,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        verbose_in_cv: int = 2):
 
     result_collector = []
-    p_grid_exp = _expand_param_grid(steps=steps, param_grid=param_grid)
+    p_grid_exp = generate_param_grid(steps=steps, param_grid=param_grid)
     step_names = list(steps.keys())
 
     if not isinstance(score_selection, ScoreGrid):
