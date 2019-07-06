@@ -7,7 +7,7 @@
 
 import pytest
 
-from ..base import generate_param_grid
+from ..param_grid import generate_param_grid
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline

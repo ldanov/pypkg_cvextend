@@ -5,7 +5,36 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-# from itertools import product as iter_product
+from itertools import product as iter_product
+from sklearn.model_selection import ParameterGrid
+
+def generate_param_grid(steps, param_grid):
+
+    final_params = []
+
+    for estimator_names in iter_product(*steps.values()):
+        current_grid = {}
+
+        # Step_name and estimator_name should correspond
+        # i.e preprocessor must be from pca and select.
+        for step_name, estimator_name in zip(steps.keys(), estimator_names):
+            for param, value in param_grid.get(estimator_name).items():
+                if param == 'pipe_step_instance':
+                    # Set actual estimator in pipeline
+                    current_grid[step_name] = [value]
+                else:
+                    # Set parameters corresponding to above estimator
+                    current_grid[step_name + '__' + param] = value
+        # Append this dictionary to final params
+        final_params.append(current_grid)
+
+    try:
+        ParameterGrid(final_params)
+    except Exception as e:
+        raise e
+    return final_params
+
+
 
 # # import from https://stackoverflow.com/a/42271829/10960229
 # def generate_param_grids(steps, param_grids):

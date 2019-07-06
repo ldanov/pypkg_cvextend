@@ -8,11 +8,10 @@
 
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
-from .base import generate_param_grid, get_grid, process_grid_result
+from .base import get_grid, process_grid_result
+from .param_grid import generate_param_grid
 from .grid_search import NestedEvaluationGrid
 from .score_grid import ScoreGrid
-
-
 
 
 def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
@@ -20,8 +19,7 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
               cv_n_jobs: int = 1, verbose_cv: int = 2):
 
     step_names = list(steps.keys())
-    p_grid_exp = generate_param_grid(steps=steps,
-                                    param_grid=param_grid)
+    p_grid_exp = generate_param_grid(steps=steps, param_grid=param_grid)
 
     all_scores = []
     for state in cv_rand_states:

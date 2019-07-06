@@ -3,8 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import ParameterGrid
 from sklearn.svm import SVC
 
-from ..base import generate_param_grid
-
+from ..param_grid import generate_param_grid
 
 def test_generate_param_grid():
     pipeline_steps = {'preprocessor': ['skip'],

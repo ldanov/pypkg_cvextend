@@ -6,11 +6,9 @@
 # License: -
 
 import copy
-from itertools import product as iter_product
 
 import numpy
 from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection import StratifiedKFold
 
 
@@ -61,28 +59,3 @@ def process_grid_result(grid_result, step_names, data_name):
     return grid_res
 
 
-def generate_param_grid(steps, param_grid):
-
-    final_params = []
-
-    for estimator_names in iter_product(*steps.values()):
-        current_grid = {}
-
-        # Step_name and estimator_name should correspond
-        # i.e preprocessor must be from pca and select.
-        for step_name, estimator_name in zip(steps.keys(), estimator_names):
-            for param, value in param_grid.get(estimator_name).items():
-                if param == 'pipe_step_instance':
-                    # Set actual estimator in pipeline
-                    current_grid[step_name] = [value]
-                else:
-                    # Set parameters corresponding to above estimator
-                    current_grid[step_name + '__' + param] = value
-        # Append this dictionary to final params
-        final_params.append(current_grid)
-
-    try:
-        ParameterGrid(final_params)
-    except Exception as e:
-        raise e
-    return final_params
