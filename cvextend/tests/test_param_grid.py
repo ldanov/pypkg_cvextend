@@ -6,11 +6,12 @@
 # License: -
 
 import pytest
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import ParameterGrid
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
 
 from ..param_grid import generate_param_grid
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import Pipeline
 
 
 def get_test_case():
@@ -37,30 +38,43 @@ def get_test_case():
     return pipeline_steps, all_params_grid
 
 
+_exp_grid_out = [
+    {
+        'preprocessor': [None],
+        'classifier': [SVC(probability=True)],
+        'classifier__C': [1, 10, 100],
+        'classifier__gamma': [0.01, 0.1],
+        'classifier__kernel': ['rbf']
+    },
+    {
+        'preprocessor': [None],
+        'classifier': [RandomForestClassifier()],
+        'classifier__n_estimators': [1, 10, 100],
+        'classifier__max_features': [1, 5, 10, 20]
+    }
+]
+
+
 def test_generate_param_grid():
 
     steps, pgrid = get_test_case()
-
-    exp_result = [
-        {
-            'preprocessor': [None],
-            'classifier': [SVC(probability=True)],
-            'classifier__C': [1, 10, 100],
-            'classifier__gamma': [0.01, 0.1],
-            'classifier__kernel': ['rbf']
-        },
-        {
-            'preprocessor': [None],
-            'classifier': [RandomForestClassifier()],
-            'classifier__n_estimators': [1, 10, 100],
-            'classifier__max_features': [1, 5, 10, 20]
-        }
-    ]
+    exp_result = _exp_grid_out
 
     result = generate_param_grid(steps, pgrid)
+
+    assert len(result) == 2
+    assert isinstance(result[0], dict)
+    assert isinstance(result[1], dict)
+
     for d1, d2 in zip(result, exp_result):
         for key in d1.keys():
             if key != "classifier":
                 assert d1[key] == d2[key]
             else:
                 assert d1[key].__class__ == d2[key].__class__
+
+    for key, value in pgrid['svm'].items():
+        if key == 'pipe_step_instance':
+            continue
+        else:
+            assert value == result[0]['classifier__' + key]
