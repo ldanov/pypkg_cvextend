@@ -7,11 +7,8 @@
 
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import make_scorer, scorer
-from hmeasure import h_score
 
-_default_score_selection = [{'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-                             'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=1)},
-                            {'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
+_default_score_selection = [{'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
                              'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
                             {'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
                              'score_criteria': 'min', 'scorer': make_scorer(f1_score)}]

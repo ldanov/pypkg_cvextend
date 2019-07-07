@@ -1,7 +1,15 @@
+# Visual Studio Code setup
 .vscode/
+
+# Jupyter notebook checkpoints
 .ipynb_checkpoints/
+
+# Cython compilation cache
 __pycache__/
+
+# Build artifacts
 /build/
+
 # Compiled python modules.
 *.pyc
 
