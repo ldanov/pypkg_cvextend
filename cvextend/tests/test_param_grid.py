@@ -16,26 +16,23 @@ from ..param_grid import generate_param_grid
 
 def get_test_case():
 
-    pipeline_steps = {'preprocessor': ['skip'],
-                      'classifier': ['svm', 'rf']}
-    all_params_grid = {
-        'skip': {
-            'pipe_step_instance': None
-        },
-        'svm': {
-            'pipe_step_instance': SVC(probability=True),
-            'C': [1, 10, 100],
-            'gamma': [.01, .1],
-            'kernel': ['rbf']
-        },
-        'rf': {
-            'pipe_step_instance': RandomForestClassifier(),
-            'n_estimators': [1, 10, 100],
-            'max_features': [1, 5, 10, 20]
+    pipeline_steps = {
+        'preprocessor': {'skip': None},
+        'classifier': {
+            'svm': SVC(probability=True),
+            'rf': RandomForestClassifier()
         }
     }
+    params_dict = {
+        'skip': {},
+        'svm': {'C': [1, 10, 100],
+                'gamma': [.01, .1],
+                'kernel': ['rbf']},
+        'rf': {'n_estimators': [1, 10, 100],
+               'max_features': [1, 5, 10, 20]}
+    }
 
-    return pipeline_steps, all_params_grid
+    return pipeline_steps, params_dict
 
 
 _exp_grid_out = [
@@ -58,19 +55,19 @@ _exp_grid_out = [
 def test_generate_param_grid():
 
     steps, pdict = get_test_case()
-    exp_result = _exp_grid_out
+    exp_params = _exp_grid_out
     exp_names = list(steps.keys())
 
-    result, stepnames = generate_param_grid(steps, pdict)
+    params, stepnames = generate_param_grid(steps, pdict)
 
-    assert len(result) == 2
+    assert len(params) == 2
     assert len(stepnames) == len(exp_names)
-    assert isinstance(result[0], dict)
-    assert isinstance(result[1], dict)
+    assert isinstance(params[0], dict)
+    assert isinstance(params[1], dict)
 
     assert stepnames == exp_names
 
-    for d1, d2 in zip(result, exp_result):
+    for d1, d2 in zip(params, exp_params):
         for key in d1.keys():
             if key != "classifier":
                 assert d1[key] == d2[key]
@@ -81,4 +78,4 @@ def test_generate_param_grid():
         if key == 'pipe_step_instance':
             continue
         else:
-            assert value == result[0]['classifier__' + key]
+            assert value == params[0]['classifier__' + key]

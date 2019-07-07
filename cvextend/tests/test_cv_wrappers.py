@@ -25,23 +25,21 @@ from ..score_grid import ScoreGrid
 
 
 def get_test1_settings():
-    pipeline_steps = {'preprocessor': ['skip'],
-                      'classifier': ['svm', 'rf']}
-    params_dict = {
-        'skip': {
-            'pipe_step_instance': None
-        },
-        'svm': {
-            'pipe_step_instance': SVC(probability=True),
-            'C': [1, 10],
-            'gamma': [.01, .1],
-            'kernel': ['rbf']
-        },
-        'rf': {
-            'pipe_step_instance': RandomForestClassifier(),
-            'n_estimators': [1, 10, 15],
-            'max_features': [1, 5, 10]
+
+    pipeline_steps = {
+        'preprocessor': {'skip': None},
+        'classifier': {
+            'svm': SVC(probability=True),
+            'rf': RandomForestClassifier()
         }
+    }
+    params_dict = {
+        'skip': {},
+        'svm': {'C': [1, 10, 100],
+                'gamma': [.01, .1],
+                'kernel': ['rbf']},
+        'rf': {'n_estimators': [1, 10, 100],
+               'max_features': [1, 5, 10, 20]}
     }
     scorer_selection_input = [
         {'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
