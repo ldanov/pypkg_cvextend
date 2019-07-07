@@ -8,7 +8,39 @@
 from itertools import product as iter_product
 from sklearn.model_selection import ParameterGrid
 
-def generate_param_grid(steps, param_dict):
+def generate_param_grid(steps: dict, param_dict):
+    '''
+    Generates sklearn.pipeline-compatible param_grid by permutation
+
+    steps: dict
+        Contains the keys to each pipeline step and which param_dict keys to permute over
+
+    param_dict: dict
+        Keys are str names of models/callables
+        Values are dicts that must contain the key 'pipe_step_instance', with value
+        model/callable instance. All other keys are model params and values are
+        lists of values to permute over.
+
+    pipeline_steps = {'preprocessor': ['skip'],
+                      'classifier': ['svm', 'rf']}
+    all_params_grid = {
+        'skip': {
+            'pipe_step_instance': None
+        },
+        'svm': {
+            'pipe_step_instance': SVC(probability=True),
+            'C': [1, 10],
+            'gamma': [.01, .1],
+            'kernel': ['rbf']
+        },
+        'rf': {
+            'pipe_step_instance': RandomForestClassifier(),
+            'n_estimators': [1, 10, 15],
+            'max_features': [1, 5, 10]
+        }
+    }
+    '''
+    # TODO: refactor s.t. steps contain the instances?
 
     final_params = []
 
