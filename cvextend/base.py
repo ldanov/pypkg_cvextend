@@ -31,8 +31,10 @@ def get_grid(estimator, param_grid, scoring, n_splits,
     )
     return grid
 
-def get_cv_grid(estimator, param_grid, scoring, cv=StratifiedKFold(shuffle=True),
-             refit=False, verbose=1):
+
+def get_cv_grid(estimator, param_grid, scoring,
+                cv=StratifiedKFold(shuffle=True),
+                refit=False, verbose=1):
 
     grid = GridSearchCV(
         estimator=estimator,
@@ -60,18 +62,15 @@ def process_grid_result(grid_result, step_names, **additional_info):
     for key, value in additional_info.items():
         grid_res[key] = value
 
-    full_step_names = ['param_' + str(x) for x in step_names]
-
     # due to specifying steps in Pipeline as object instances,
     # results contain the instances themselves
     # instead return class name as string
-    for step in full_step_names:
-        object_class = []
-        for obj in grid_res[step]:
-            object_class.append(_get_object_fullname(obj))
-        object_class = numpy.array(object_class)
-        grid_res[step] = object_class
+    group_type_keys = []
+    for group in step_names:
+        type_group = 'type_' + group
+        group_type_keys.append(type_group)
+        param_group = 'param_' + group
+        classes = grid_res[param_group]
+        grid_res[type_group] = [_get_object_fullname(x) for x in classes]
 
     return grid_res
-
-
