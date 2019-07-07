@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
-"""Utility functions for generating parameter grid"""
+"""Utility function for generating parameter grid"""
 
 # Authors: Lyubomir Danov <->
 # License: -
 
 from itertools import product as iter_product
+
 from sklearn.model_selection import ParameterGrid
+
 
 # TODO: convert to class
 def generate_param_grid(steps: dict, param_dict):
@@ -67,7 +69,6 @@ def generate_param_grid(steps: dict, param_dict):
         raise e
     step_names = list(steps.keys())
     return final_params, step_names
-
 
 
 # # import from https://stackoverflow.com/a/42271829/10960229

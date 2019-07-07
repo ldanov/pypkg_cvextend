@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Utility functions for running nested cross-validation of sampling methods"""
+"""Utility functions for running non- and nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -56,10 +56,11 @@ def nonnested_cv(cv_grid, X, y,
     grid = copy.deepcopy(cv_grid)
     grid.fit(X, y)
     run_score = NestedEvaluationGrid.process_result(grid.cv_results_,
-                                    step_names, **additional_info)
+                                                    step_names, **additional_info)
     if return_grid:
         return run_score, grid
     return run_score
+
 
 def nested_cv(cv_grid, X, y,
               step_names: list,

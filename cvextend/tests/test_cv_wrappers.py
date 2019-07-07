@@ -53,8 +53,8 @@ def get_test1_settings():
     ]
 
     pipe = Pipeline([('preprocessor', None), ('classifier', None)])
-    param_grid, step_names = generate_param_grid(steps=pipeline_steps, 
-        param_dict=params_dict)
+    param_grid, step_names = generate_param_grid(steps=pipeline_steps,
+                                                 param_dict=params_dict)
     scorer_selection = ScoreGrid(scorer_selection_input)
     cv_grid = get_cv_grid(estimator=pipe,
                           param_grid=param_grid,
@@ -67,7 +67,7 @@ def get_test1_settings():
     X, y = load_breast_cancer(return_X_y=True)
 
     kwargs = {
-        'additional_info': {'data_name':"breast_cancer"},
+        'additional_info': {'data_name': "breast_cancer"},
         'cv_grid': cv_grid,
         'X': X,
         'y': y,
@@ -81,17 +81,15 @@ def get_test1_settings():
 
 def test_nested_cv():
     full_exp_cols = ['data_name', 'estimator', 'inner_cv_random_state', 'outer_fold_n',
-       'params', 'score_name', 'score_value', 'scorer', 'type_classifier',
-       'type_preprocessor']
+                     'params', 'score_name', 'score_value', 'scorer', 'type_classifier',
+                     'type_preprocessor']
     # two classifiers, two inner folds and three scores
     exp_min_rows_outer = 2 * 2 * 3
 
     input_settings = get_test1_settings()
 
-    full_result, _ = nested_cv(
-       **input_settings
-    )
-    
+    full_result, _ = nested_cv(**input_settings)
+
     df_full_result = pandas.DataFrame(full_result)
     assert (df_full_result.columns == full_exp_cols).all()
     assert df_full_result.shape[0] >= exp_min_rows_outer

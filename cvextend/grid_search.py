@@ -10,17 +10,15 @@ import copy
 import pandas
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-# from .base import _get_object_fullname
 from .score_grid import ScoreGrid
 
 
 class NestedEvaluationGrid(object):
     def __init__(self, gridcv, score_grid, group_names):
-        if not isinstance(gridcv, (GridSearchCV, RandomizedSearchCV)):
-            TypeError("grid is does not inherit from BaseSearchCV!")
+
         if not isinstance(score_grid, ScoreGrid):
             TypeError("score_grid is does not inherit from ScoreGrid!")
-        # self.grid = gridcv
+
         self.cv_results = copy.deepcopy(gridcv.cv_results_)
         self.cv_estimator = copy.deepcopy(gridcv.estimator)
         self.score_grid = score_grid
@@ -125,7 +123,10 @@ class NestedEvaluationGrid(object):
             group_type_keys.append(type_group)
             param_group = 'param_' + group
             classes = result[param_group]
-            result[type_group] = [NestedEvaluationGrid._get_object_fullname(x) for x in classes]
+            result[type_group] = [
+                NestedEvaluationGrid._get_object_fullname(x)
+                for x in classes
+            ]
 
         return result, group_type_keys
 

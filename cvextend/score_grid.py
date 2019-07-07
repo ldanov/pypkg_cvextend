@@ -5,8 +5,10 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
+from sklearn.metrics.scorer import _BaseScorer
+
+from sklearn.metrics import make_scorer
 from sklearn.metrics import accuracy_score, f1_score
-from sklearn.metrics import make_scorer, scorer
 
 _default_score_selection = [{'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
                              'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
@@ -34,7 +36,7 @@ class ScoreGrid(object):
         {
             # scorer object itself
             'name': 'scorer',
-            'type': scorer._BaseScorer
+            'type': _BaseScorer
         }]
 
     def __init__(self, score_selection=_default_score_selection):
