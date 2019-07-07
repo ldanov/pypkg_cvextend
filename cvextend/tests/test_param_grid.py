@@ -57,11 +57,11 @@ _exp_grid_out = [
 
 def test_generate_param_grid():
 
-    steps, pgrid = get_test_case()
+    steps, pdict = get_test_case()
     exp_result = _exp_grid_out
     exp_names = list(steps.keys())
 
-    result, stepnames = generate_param_grid(steps, pgrid)
+    result, stepnames = generate_param_grid(steps, pdict)
 
     assert len(result) == 2
     assert len(stepnames) == len(exp_names)
@@ -77,7 +77,7 @@ def test_generate_param_grid():
             else:
                 assert d1[key].__class__ == d2[key].__class__
 
-    for key, value in pgrid['svm'].items():
+    for key, value in pdict['svm'].items():
         if key == 'pipe_step_instance':
             continue
         else:

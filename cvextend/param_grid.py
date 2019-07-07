@@ -8,7 +8,7 @@
 from itertools import product as iter_product
 from sklearn.model_selection import ParameterGrid
 
-def generate_param_grid(steps, param_grid):
+def generate_param_grid(steps, param_dict):
 
     final_params = []
 
@@ -18,7 +18,7 @@ def generate_param_grid(steps, param_grid):
         # Step_name and estimator_name should correspond
         # i.e preprocessor must be from pca and select.
         for step_name, estimator_name in zip(steps.keys(), estimator_names):
-            for param, value in param_grid.get(estimator_name).items():
+            for param, value in param_dict.get(estimator_name).items():
                 if param == 'pipe_step_instance':
                     # Set actual estimator in pipeline
                     current_grid[step_name] = [value]
