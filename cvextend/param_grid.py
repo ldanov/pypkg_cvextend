@@ -32,7 +32,8 @@ def generate_param_grid(steps, param_grid):
         ParameterGrid(final_params)
     except Exception as e:
         raise e
-    return final_params
+    step_names = list(steps.keys())
+    return final_params, step_names
 
 
 

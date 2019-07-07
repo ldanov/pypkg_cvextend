@@ -59,12 +59,16 @@ def test_generate_param_grid():
 
     steps, pgrid = get_test_case()
     exp_result = _exp_grid_out
+    exp_names = list(steps.keys())
 
-    result = generate_param_grid(steps, pgrid)
+    result, stepnames = generate_param_grid(steps, pgrid)
 
     assert len(result) == 2
+    assert len(stepnames) == len(exp_names)
     assert isinstance(result[0], dict)
     assert isinstance(result[1], dict)
+
+    assert stepnames == exp_names
 
     for d1, d2 in zip(result, exp_result):
         for key in d1.keys():

@@ -18,8 +18,7 @@ def repeat_cv(data_name: str, X, y, param_grid, steps, pipe,
               scorer_dict, cv_rand_states: list = [], k_folds: int = 5,
               cv_n_jobs: int = 1, verbose_cv: int = 2):
 
-    step_names = list(steps.keys())
-    p_grid_exp = generate_param_grid(steps=steps, param_grid=param_grid)
+    p_grid_exp, step_names = generate_param_grid(steps=steps, param_grid=param_grid)
 
     all_scores = []
     for state in cv_rand_states:
@@ -46,8 +45,7 @@ def repeated_nested_cv(data_name: str, X, y, param_grid, steps, pipe,
                        verbose_in_cv: int = 2):
 
     result_collector = []
-    p_grid_exp = generate_param_grid(steps=steps, param_grid=param_grid)
-    step_names = list(steps.keys())
+    p_grid_exp, step_names = generate_param_grid(steps=steps, param_grid=param_grid)
 
     if not isinstance(score_selection, ScoreGrid):
         TypeError('score_selection is not a ScoreGrid instance')
