@@ -7,39 +7,35 @@
 
 
 import copy
-from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
-from .base import get_grid, get_cv_grid
-from .param_grid import generate_param_grid
+from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection._search import BaseSearchCV
+from sklearn.pipeline import Pipeline
+
 from .grid_search import NestedEvaluationGrid
 from .score_grid import ScoreGrid
-
 
 # def repeat_cv(data_name: str, X, y, param_dict, steps, pipe,
 #               scorer_dict, n_repeats: int = 10, k_folds: int = 5,
 #               cv_n_jobs: int = 1, verbose_cv: int = 2):
-
-#     param_grid, step_names = generate_param_grid(
-#         steps=steps, param_dict=param_dict)
-
 #     all_scores = []
 #     for i in range(n_repeats):
-
 #         grid = get_grid(estimator=pipe,
 #                         param_grid=param_grid,
 #                         scoring=scorer_dict,
 #                         n_splits=k_folds,
 #                         random_state=i,
 #                         verbose=verbose_cv)
-
 #         grid.fit(X, y)
 #         run_score = grid.cv_results_
 #         run_score = process_grid_result(run_score,
 #                                         step_names,
 #                                         data_name=data_name)
-
 #     return all_scores
 
+
+# from .base import get_grid, get_cv_grid
+# from .param_grid import generate_param_grid
 # param_grid, step_names = generate_param_grid(steps=steps, param_grid=param_grid)
 # cv_grid = get_cv_grid(estimator=pipe,
 #                         param_grid=param_grid,
@@ -48,12 +44,15 @@ from .score_grid import ScoreGrid
 #                         verbose=verbose_cv)
 # random_states = [0,1]
 
-
 def nonnested_cv(cv_grid, X, y,
                  step_names,
                  additional_info={'data_name': 'noname'},
                  return_grid=False):
 
+    if not isinstance(cv_grid, BaseSearchCV):
+        raise TypeError('Arg cv_grid must be of class sklearn.model_selection CV types')
+    if not isinstance(cv_grid.estimator, Pipeline):
+        raise TypeError('Arg estimator of cv_grid must be of class Pipeline')
     grid = copy.deepcopy(cv_grid)
     grid.fit(X, y)
     run_score = NestedEvaluationGrid.process_result(grid.cv_results_,

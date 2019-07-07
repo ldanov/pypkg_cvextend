@@ -8,6 +8,7 @@
 from itertools import product as iter_product
 from sklearn.model_selection import ParameterGrid
 
+# TODO: convert to class
 def generate_param_grid(steps: dict, param_dict):
     '''
     Generates sklearn.pipeline-compatible param_grid by permutation
