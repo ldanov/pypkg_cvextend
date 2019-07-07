@@ -31,6 +31,21 @@ def get_grid(estimator, param_grid, scoring, n_splits,
     )
     return grid
 
+def get_cv_grid(estimator, param_grid, scoring, cv=StratifiedKFold(shuffle=True),
+             refit=False, verbose=1):
+
+    grid = GridSearchCV(
+        estimator=estimator,
+        param_grid=param_grid,
+        cv=cv,
+        scoring=scoring,
+        return_train_score=True,
+        iid=False,
+        refit=refit,
+        verbose=verbose
+    )
+    return grid
+
 
 def _get_object_fullname(o):
     module = o.__class__.__module__
@@ -40,9 +55,10 @@ def _get_object_fullname(o):
         return module + '.' + o.__class__.__name__
 
 
-def process_grid_result(grid_result, step_names, data_name):
+def process_grid_result(grid_result, step_names, **additional_info):
     grid_res = copy.deepcopy(grid_result)
-    grid_res['data_name'] = data_name
+    for key, value in additional_info.items():
+        grid_res[key] = value
 
     full_step_names = ['param_' + str(x) for x in step_names]
 
