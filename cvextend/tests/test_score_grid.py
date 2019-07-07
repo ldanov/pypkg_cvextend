@@ -5,11 +5,14 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
-import pytest
-from ..score_grid import ScoreGrid
-from sklearn.metrics import make_scorer, accuracy_score, f1_score
-from hmeasure import h_score
 import copy
+
+import pytest
+from sklearn.metrics import accuracy_score, f1_score, make_scorer
+
+from hmeasure import h_score
+
+from ..score_grid import ScoreGrid
 
 
 def get_correct_data():
