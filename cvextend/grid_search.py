@@ -8,7 +8,6 @@
 import copy
 
 import pandas
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
 from .score_grid import ScoreGrid
 

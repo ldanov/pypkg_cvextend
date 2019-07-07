@@ -8,8 +8,7 @@ numpy == 1.16.3
 pandas == 0.24.2
 
 # cvextend\base.py: 11,12
-# cvextend\cv_wrappers.py: 10
-# cvextend\grid_search.py: 11
-# cvextend\param_grid.py: 9
-# cvextend\score_grid.py: 9
+# cvextend\cv_wrappers.py: 11,12,13
+# cvextend\param_grid.py: 10
+# cvextend\score_grid.py: 11
 scikit_learn == 0.21.2
