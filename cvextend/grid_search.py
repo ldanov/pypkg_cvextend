@@ -10,7 +10,7 @@ import copy
 import pandas
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-from .base import _get_object_fullname
+# from .base import _get_object_fullname
 from .score_grid import ScoreGrid
 
 
@@ -39,14 +39,7 @@ class NestedEvaluationGrid(object):
 
     def add_metainfo_results(self):
         eval_df = copy.deepcopy(pandas.DataFrame(self.cv_results))
-
-        group_type_keys = []
-        for group in self.groups:
-            type_group = 'type_' + group
-            group_type_keys.append(type_group)
-            param_group = 'param_' + group
-            classes = eval_df[param_group].values
-            eval_df[type_group] = [_get_object_fullname(x) for x in classes]
+        eval_df, group_type_keys = self.process_result(eval_df, self.groups)
 
         self.eval_df = eval_df
         self.group_type_keys = group_type_keys
@@ -117,3 +110,29 @@ class NestedEvaluationGrid(object):
                 estimator_dict[key] = value
         self.final_result = final_result
         return self
+
+    @staticmethod
+    def process_result(result, step_names, **additional_info):
+        for key, value in additional_info.items():
+            result[key] = value
+
+        # due to specifying steps in Pipeline as object instances,
+        # results contain the instances themselves
+        # instead return class name as string
+        group_type_keys = []
+        for group in step_names:
+            type_group = 'type_' + group
+            group_type_keys.append(type_group)
+            param_group = 'param_' + group
+            classes = result[param_group]
+            result[type_group] = [NestedEvaluationGrid._get_object_fullname(x) for x in classes]
+
+        return result, group_type_keys
+
+    @staticmethod
+    def _get_object_fullname(o):
+        module = o.__class__.__module__
+        if module is None or module == str.__class__.__module__:
+            return o.__class__.__name__
+        else:
+            return module + '.' + o.__class__.__name__
