@@ -15,5 +15,5 @@ setup(name=__PROJECT_NAME__,
       author=__AUTHORS__,
       url=__URL__,
       packages=__PACKAGES__,
-      install_requires = ['numpy == 1.16.3', 'scikit_learn == 0.21.2', 'pandas == 0.24.2']
+      install_requires = ['numpy >= 1.16.3', 'scikit_learn >= 0.21.2', 'pandas >= 0.24.2']
      )
