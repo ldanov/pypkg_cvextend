@@ -26,14 +26,14 @@ def generate_param_grid(steps: dict, param_dict):
         Values are dicts that contain model params as keys and lists of values
         to permute over as values.
 
-    pipeline_steps = {
+    steps = {
         'preprocessor': {'skip': None},
         'classifier': {
             'svm': SVC(probability=True),
             'rf': RandomForestClassifier()
         }
     }
-    params_dict = {
+    param_dict = {
         'skip': {},
         'svm': {'C': [1, 10, 100],
                 'gamma': [.01, .1],
