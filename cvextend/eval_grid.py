@@ -12,32 +12,30 @@ from .score_grid import ScoreGrid
 
 class EvaluationGrid(object):
     """
-    EvaluationGrid:
+    EvaluationGrid
         A class that given a fitted sklearn *SearchCV object returns the 
         best estimator's performance on a separate test set for each score. 
         Requires original X and y used for training.
 
     Parameters
     ----------
-    gridcv: object
+    gridcv : object
         A fitted sklearn GridSearchCV or RandomizedSearchCV instance
 
-    score_grid: object
+    score_grid : object
         A cvextend.ScoreGrid instance
-
-    group_names: list of str
-        List containing the pipeline step names used in the  *SearchCV 
-        object training
 
     """
 
-    def __init__(self, gridcv, score_grid, group_names):
+    def __init__(self, gridcv, score_grid):
 
         if not isinstance(score_grid, ScoreGrid):
             TypeError("score_grid does not inherit from ScoreGrid!")
 
+        group_names = list(gridcv.estimator.named_steps.keys())
         eval_df = pandas.DataFrame(copy.deepcopy(gridcv.cv_results_))
         eval_df, group_type_keys = self.process_result(eval_df, group_names)
+        
         self.eval_df = eval_df
         self.group_type_keys = group_type_keys
 
@@ -85,6 +83,11 @@ class EvaluationGrid(object):
         """
         # TODO: replace pandas with numpy
         eval_df = self.eval_df
+        
+        # which columns to select
+        params = [col for col in eval_df if col.startswith('param_')]
+        retr_cols = self.group_type_keys + params + ['params']
+        
         per_score = []
 
         for score_type in self.score_grid.score_selection:
@@ -92,8 +95,6 @@ class EvaluationGrid(object):
             score_key = score_type['score_key']
             score_criteria = score_type['score_criteria']
 
-            # which columns to select
-            retr_cols = self.group_type_keys + ['params']
             # for each unique value in each group from groups
             # return entries where score_key corresponds to score_criteria
             idx = eval_df.groupby(self.group_type_keys)[score_key]
@@ -158,7 +159,7 @@ class EvaluationGrid(object):
         # candidate_list
 
         if self.fitted_estimators is None:
-            ValueError('self.get_fitted_estimators(a, b) has not been run')
+            ValueError('self.get_fitted_estimators(X, y) has not been run')
 
         final_result = copy.deepcopy(self.fitted_estimators)
         for estimator_dict in final_result:
@@ -192,7 +193,7 @@ class EvaluationGrid(object):
         return data
 
     @staticmethod
-    def process_result(result, step_names, **info):
+    def process_result(result, step_names):
         """
         process_result
             Given original results dict or df as given by *SearchCV and 
@@ -206,22 +207,20 @@ class EvaluationGrid(object):
         step_names : list
             The str names of the pipeline steps of the estimator given 
             to *SearchCV for fitting.
-        **info : dict of str
-            Additional key-value pairs to be added to result object
-
+        
         Returns
-        ----------
-        result: dict
+        -------
+        result : dict
             Enchanced result object
-        group_type_keys: list
-            List of keys of newly added entries (except **info)
+        group_type_keys : list
+            List of keys of newly added entries
         """
-        result = EvaluationGrid.add_info(result, **info)
-
+        
         # due to specifying steps in Pipeline as object instances,
         # results contain the instances themselves
         # instead return class name as string
         obj_fullname = EvaluationGrid._get_object_fullname
+        
         group_type_keys = []
         for group in step_names:
             type_group = 'type_' + group
@@ -245,7 +244,7 @@ class EvaluationGrid(object):
         o : object
 
         Returns
-        ----------
+        -------
         fin_str : str
         """
 

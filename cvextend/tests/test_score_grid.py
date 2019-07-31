@@ -16,16 +16,22 @@ from ..score_grid import ScoreGrid
 def get_correct_data():
     sc_selection = [
         {
-            'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-            'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
+            'score_name': 'H-Measure', 
+            'score_key': 'rank_test_H-Measure',
+            'score_criteria': 'min', 
+            'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
         },
         {
-            'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
-            'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)
+            'score_name': 'Accuracy', 
+            'score_key': 'rank_test_Accuracy',
+            'score_criteria': 'min', 
+            'scorer': make_scorer(accuracy_score)
         },
         {
-            'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',
-            'score_criteria': 'min', 'scorer': make_scorer(f1_score)
+            'score_name': 'F1-Score', 
+            'score_key': 'rank_test_F1-Score',
+            'score_criteria': 'min', 
+            'scorer': make_scorer(f1_score)
         }
     ]
     exp_sklearn = {
@@ -47,8 +53,10 @@ _cases_to_run = [
 @pytest.fixture(params=_cases_to_run)
 def get_wrong_input_data(request):
     _default_case = [{
-        'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-        'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
+        'score_name': 'H-Measure', 
+        'score_key': 'rank_test_H-Measure',
+        'score_criteria': 'min', 
+        'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
     }]
 
     case1 = copy.deepcopy(_default_case)

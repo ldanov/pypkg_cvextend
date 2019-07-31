@@ -9,17 +9,16 @@ from imblearn.pipeline import Pipeline
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, make_scorer
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from sklearn.svm import SVC
 
 from hmeasure import h_score
 
-from ..base import get_cv_grid
 from ..cv_wrappers import nested_cv
 from ..param_grid import generate_param_grid
 from ..score_grid import ScoreGrid
 
-# from imblearn.over_sampling import SMOTE
+# TODO: test basic_cv
 
 
 def get_test1_settings():
@@ -49,14 +48,21 @@ def get_test1_settings():
     ]
 
     pipe = Pipeline([('preprocessor', None), ('classifier', None)])
-    param_grid, step_names = generate_param_grid(steps=pipeline_steps,
-                                                 param_dict=params_dict)
+    param_grid, _ = generate_param_grid(steps=pipeline_steps,
+                                        param_dict=params_dict)
     scorer_selection = ScoreGrid(scorer_selection_input)
-    cv_grid = get_cv_grid(estimator=pipe,
-                          param_grid=param_grid,
-                          scoring=scorer_selection.get_sklearn_dict(),
-                          cv=StratifiedKFold(shuffle=True, n_splits=5),
-                          verbose=1)
+    
+    cv_grid = GridSearchCV(
+        estimator=pipe,
+        param_grid=param_grid,
+        cv=StratifiedKFold(shuffle=True, n_splits=5),
+        scoring=scorer_selection.get_sklearn_dict(),
+        return_train_score=True,
+        iid=False,
+        refit=False,
+        verbose=1
+    )
+    
     random_states = [0, 1]
     outer_cv = StratifiedKFold(n_splits=2)
 
@@ -67,8 +73,7 @@ def get_test1_settings():
         'cv_grid': cv_grid,
         'X': X,
         'y': y,
-        'step_names': step_names,
-        'random_states': random_states,
+        'inner_cv_seeds': random_states,
         'outer_cv': outer_cv,
         'score_selection': scorer_selection
     }
@@ -77,7 +82,10 @@ def get_test1_settings():
 
 def test_nested_cv():
     full_exp_cols = ['data_name', 'estimator', 'inner_cv_random_state', 'outer_fold_n',
-                     'params', 'score_name', 'score_value', 'scorer', 'type_classifier',
+                     'param_classifier', 'param_classifier__C', 'param_classifier__gamma',
+                     'param_classifier__kernel', 'param_classifier__max_features',
+                     'param_classifier__n_estimators', 'param_preprocessor', 'params',
+                     'score_name', 'score_value', 'scorer', 'type_classifier',
                      'type_preprocessor']
     # two classifiers, two inner folds and three scores
     exp_min_rows_outer = 2 * 2 * 3
