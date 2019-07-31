@@ -35,7 +35,7 @@ class EvaluationGrid(object):
         group_names = list(gridcv.estimator.named_steps.keys())
         eval_df = pandas.DataFrame(copy.deepcopy(gridcv.cv_results_))
         eval_df, group_type_keys = self.process_result(eval_df, group_names)
-        
+
         self.eval_df = eval_df
         self.group_type_keys = group_type_keys
 
@@ -83,11 +83,11 @@ class EvaluationGrid(object):
         """
         # TODO: replace pandas with numpy
         eval_df = self.eval_df
-        
+
         # which columns to select
         params = [col for col in eval_df if col.startswith('param_')]
         retr_cols = self.group_type_keys + params + ['params']
-        
+
         per_score = []
 
         for score_type in self.score_grid.score_selection:
@@ -207,7 +207,7 @@ class EvaluationGrid(object):
         step_names : list
             The str names of the pipeline steps of the estimator given 
             to *SearchCV for fitting.
-        
+
         Returns
         -------
         result : dict
@@ -215,12 +215,12 @@ class EvaluationGrid(object):
         group_type_keys : list
             List of keys of newly added entries
         """
-        
+
         # due to specifying steps in Pipeline as object instances,
         # results contain the instances themselves
         # instead return class name as string
         obj_fullname = EvaluationGrid._get_object_fullname
-        
+
         group_type_keys = []
         for group in step_names:
             type_group = 'type_' + group
@@ -256,7 +256,3 @@ class EvaluationGrid(object):
             fin_str = module + '.' + o.__class__.__name__
 
         return fin_str
-
-
-# Alias for backwards compability
-NestedEvaluationGrid = EvaluationGrid
