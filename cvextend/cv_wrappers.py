@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Utility functions for running non- and nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->

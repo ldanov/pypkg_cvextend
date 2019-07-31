@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Utility function for generating parameter grid"""
 
 # Authors: Lyubomir Danov <->

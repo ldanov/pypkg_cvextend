@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Tests for param_grid"""
 
 # Authors: Lyubomir Danov <->

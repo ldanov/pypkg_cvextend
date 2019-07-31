@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """ScoreGrid is a utility class holding information about which score to use """
 
 # Authors: Lyubomir Danov <->

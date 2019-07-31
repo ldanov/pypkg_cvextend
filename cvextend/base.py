@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Basic functions for running nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->
