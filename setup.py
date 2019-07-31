@@ -3,7 +3,7 @@ import re
 
 from setuptools import setup
 
-from cvextend._version import __version__
+from cvextend.__init__ import __version__
 
 
 def _parse_requirements(filepath):

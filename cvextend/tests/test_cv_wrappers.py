@@ -5,14 +5,12 @@
 
 import pandas
 import pytest
-from imblearn.pipeline import Pipeline
 from sklearn.datasets import load_breast_cancer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, make_scorer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
+from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
-
-from hmeasure import h_score
 
 from ..cv_wrappers import basic_cv, nested_cv
 from ..param_grid import generate_param_grid
@@ -37,8 +35,6 @@ def get_test1_settings():
                'max_features': [1, 5, 10, 20]}
     }
     scorer_selection_input = [
-        {'score_name': 'H-Measure', 'score_key': 'rank_test_H-Measure',
-         'score_criteria': 'min', 'scorer': make_scorer(h_score, needs_proba=True, pos_label=1)},
         {'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
          'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
         {'score_name': 'F1-Score', 'score_key': 'rank_test_F1-Score',

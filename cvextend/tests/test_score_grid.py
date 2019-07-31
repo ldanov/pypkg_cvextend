@@ -14,15 +14,15 @@ from ..score_grid import ScoreGrid
 def get_correct_data():
     sc_selection = [
         {
-            'score_name': 'Accuracy', 
+            'score_name': 'Accuracy',
             'score_key': 'rank_test_Accuracy',
-            'score_criteria': 'min', 
+            'score_criteria': 'min',
             'scorer': make_scorer(accuracy_score)
         },
         {
-            'score_name': 'F1-Score', 
+            'score_name': 'F1-Score',
             'score_key': 'rank_test_F1-Score',
-            'score_criteria': 'min', 
+            'score_criteria': 'min',
             'scorer': make_scorer(f1_score)
         }
     ]
@@ -44,9 +44,9 @@ _cases_to_run = [
 @pytest.fixture(params=_cases_to_run)
 def get_wrong_input_data(request):
     _default_case = [{
-        'score_name': 'Accuracy', 
+        'score_name': 'Accuracy',
         'score_key': 'rank_test_Accuracy',
-        'score_criteria': 'min', 
+        'score_criteria': 'min',
         'scorer': make_scorer(accuracy_score)
     }]
 
