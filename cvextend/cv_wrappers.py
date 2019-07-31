@@ -36,7 +36,7 @@ def basic_cv(cv_grid, X, y,
     run_score : dict-like
         The grid.cv_results_ enchanced with **info
     grid : object
-        The fitter grid object
+        The fitted grid object
 
     Raises
     ------
@@ -139,8 +139,11 @@ def nested_cv(cv_grid, X, y,
     Returns
     -------
     outer_results : dict
-        Contains the best performing estimators (combination of Pipeline
-        steps) for each outer split and each scorer
+        Contains the performance of the best hyperparameters of each 
+        estimator (combination of Pipeline steps) on each outer fold. 
+        The best performing hyperparameter combination is picked on a 
+        per score basis from the inner (nested) cross-validation. Only 
+        the score, for which the combination was a winner, is reported.
     inner_results : list of dicts
         Contains all results from nested cross-validation as reported by
         *SearchCV.cv_results_ for each outer split
