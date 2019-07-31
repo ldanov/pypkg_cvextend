@@ -10,7 +10,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection._search import BaseSearchCV
 from sklearn.pipeline import Pipeline
 
-from .grid_search import NestedEvaluationGrid
+from .eval_grid import EvaluationGrid
 from .score_grid import ScoreGrid
 
 # def repeat_cv(data_name: str, X, y, param_dict, steps, pipe,
@@ -46,15 +46,17 @@ def nonnested_cv(cv_grid, X, y,
                  step_names,
                  additional_info={'data_name': 'noname'},
                  return_grid=False):
+    # TODO: documentation
 
     if not isinstance(cv_grid, BaseSearchCV):
         raise TypeError('Arg cv_grid must be of class sklearn.model_selection CV types')
     if not isinstance(cv_grid.estimator, Pipeline):
         raise TypeError('Arg estimator of cv_grid must be of class Pipeline')
+    
     grid = copy.deepcopy(cv_grid)
     grid.fit(X, y)
-    run_score = NestedEvaluationGrid.process_result(grid.cv_results_,
-                                                    step_names, **additional_info)
+    run_score = EvaluationGrid.process_result(grid.cv_results_,
+                                              step_names, **additional_info)
     if return_grid:
         return run_score, grid
     return run_score
@@ -68,12 +70,11 @@ def nested_cv(cv_grid, X, y,
                                        random_state=1),
               score_selection=ScoreGrid(),
               additional_info={'data_name': 'noname'}):
+    # TODO: documentation
 
     final_result_collector = []
     inner_result_collector = []
 
-    if not isinstance(score_selection, ScoreGrid):
-        TypeError('Argument score_selection is not a ScoreGrid instance.')
     if len(random_states) != outer_cv.n_splits:
         ValueError('Length of random_states arg must equal outer_cv splits.')
 
@@ -96,9 +97,9 @@ def nested_cv(cv_grid, X, y,
                                                    additional_info=add_info_copy,
                                                    return_grid=True)
 
-        grid_evaluate = NestedEvaluationGrid(grid_inner,
-                                             score_selection,
-                                             step_names)
+        grid_evaluate = EvaluationGrid(grid_inner,
+                                       score_selection,
+                                       step_names)
 
         outer_score = grid_evaluate.refit_score(X_train=X_train,
                                                 y_train=y_train,
