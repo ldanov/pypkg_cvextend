@@ -1,4 +1,4 @@
-"""NestedEvaluationGrid class for running nested cross-validation of sampling methods"""
+"""EvaluationGrid class for running nested cross-validation of sampling methods"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -10,11 +10,26 @@ import pandas
 from .score_grid import ScoreGrid
 
 
-class NestedEvaluationGrid(object):
+class EvaluationGrid(object):
+    '''
+    A class that given a fitted sklearn *SearchCV object 
+
+    gridcv: object
+        A fitted sklearn GridSearchCV or RandomizedSearchCV instance
+
+    score_grid: object
+        A cvextend.ScoreGrid instance
+
+    group_names: list of str
+        List containing the names of the pipeline steps 
+        used in the *SearchCV object training
+
+   
+    '''
     def __init__(self, gridcv, score_grid, group_names):
 
         if not isinstance(score_grid, ScoreGrid):
-            TypeError("score_grid is does not inherit from ScoreGrid!")
+            TypeError("score_grid does not inherit from ScoreGrid!")
 
         self.cv_results = copy.deepcopy(gridcv.cv_results_)
         self.cv_estimator = copy.deepcopy(gridcv.estimator)
@@ -59,10 +74,8 @@ class NestedEvaluationGrid(object):
             retr_cols = self.group_type_keys + ['params']
             # for each unique value in each group from groups
             # return entries where score_key corresponds to score_criteria
-            idx = eval_df.groupby(self.group_type_keys)[
-                score_key].transform(score_criteria)
-            score_best_params = copy.deepcopy(
-                eval_df.loc[idx == eval_df[score_key], retr_cols])
+            idx = eval_df.groupby(self.group_type_keys)[score_key].transform(score_criteria)
+            score_best_params = copy.deepcopy(eval_df.loc[idx == eval_df[score_key], retr_cols])
 
             # return score_name and scorer itself for ease of scoring
             score_best_params['score_name'] = score_type['score_name']
@@ -121,7 +134,7 @@ class NestedEvaluationGrid(object):
             param_group = 'param_' + group
             classes = result[param_group]
             result[type_group] = [
-                NestedEvaluationGrid._get_object_fullname(x)
+                EvaluationGrid._get_object_fullname(x)
                 for x in classes
             ]
 
@@ -134,3 +147,6 @@ class NestedEvaluationGrid(object):
             return o.__class__.__name__
         else:
             return module + '.' + o.__class__.__name__
+
+# Alias for backwards compability
+NestedEvaluationGrid = EvaluationGrid
