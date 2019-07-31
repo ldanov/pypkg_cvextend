@@ -8,19 +8,11 @@ import copy
 import pytest
 from sklearn.metrics import accuracy_score, f1_score, make_scorer
 
-from hmeasure import h_score
-
 from ..score_grid import ScoreGrid
 
 
 def get_correct_data():
     sc_selection = [
-        {
-            'score_name': 'H-Measure', 
-            'score_key': 'rank_test_H-Measure',
-            'score_criteria': 'min', 
-            'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
-        },
         {
             'score_name': 'Accuracy', 
             'score_key': 'rank_test_Accuracy',
@@ -35,7 +27,6 @@ def get_correct_data():
         }
     ]
     exp_sklearn = {
-        'H-Measure': make_scorer(h_score, needs_proba=True, pos_label=0),
         'Accuracy': make_scorer(accuracy_score),
         'F1-Score': make_scorer(f1_score)
     }
@@ -53,10 +44,10 @@ _cases_to_run = [
 @pytest.fixture(params=_cases_to_run)
 def get_wrong_input_data(request):
     _default_case = [{
-        'score_name': 'H-Measure', 
-        'score_key': 'rank_test_H-Measure',
+        'score_name': 'Accuracy', 
+        'score_key': 'rank_test_Accuracy',
         'score_criteria': 'min', 
-        'scorer': make_scorer(h_score, needs_proba=True, pos_label=0)
+        'scorer': make_scorer(accuracy_score)
     }]
 
     case1 = copy.deepcopy(_default_case)
@@ -66,7 +57,7 @@ def get_wrong_input_data(request):
     case2[0]['scorer'] = str(case2[0]['scorer'])
 
     case3 = copy.deepcopy(_default_case)
-    case3[0]['score_criteria'] = min
+    case3[0]['score_criteria'] = 123
 
     sc_selection = {
         'case1': case1,

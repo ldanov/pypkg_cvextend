@@ -3,6 +3,8 @@
 # Authors: Lyubomir Danov <->
 # License: -
 
+import collections.abc
+
 from sklearn.metrics.scorer import _BaseScorer
 
 from sklearn.metrics import make_scorer
@@ -71,7 +73,7 @@ class ScoreGrid(object):
         {
             # which pandas-known string callable to give to call transform on results
             'name':  'score_criteria',
-            'type': (str, callable)
+            'type': (str, collections.abc.Callable)
         },
         {
             # scorer object itself
