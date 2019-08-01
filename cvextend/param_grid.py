@@ -1,4 +1,5 @@
-"""Utility function for generating parameter grid"""
+"""Utility function for generating parameter grid
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -11,9 +12,7 @@ from sklearn.model_selection import ParameterGrid
 # TODO: convert to class
 # based on https://stackoverflow.com/a/42271829/10960229
 def generate_param_grid(steps: dict, param_dict: dict):
-    """
-    generate_param_grid 
-        Generates sklearn.pipeline-compatible param_grid by permutation
+    """Generates sklearn.pipeline-compatible param_grid by permutation
 
     Parameters
     ----------
@@ -33,28 +32,28 @@ def generate_param_grid(steps: dict, param_dict: dict):
     step_names : list of str
         The key values of steps
 
-    Example
-    -------
-    from sklearn.svm import SVC
-    from sklearn.ensemble import RandomForestClassifier
+    Examples
+    --------
+    >>> from cvextend import generate_param_grid
+    >>> from sklearn.svm import SVC
+    >>> from sklearn.ensemble import RandomForestClassifier
     
-    steps = {
-        'preprocessor': {'skip': None},
-        'classifier': {
-            'svm': SVC(probability=True),
-            'rf': RandomForestClassifier()
-        }
-    }
-    param_dict = {
-        'skip': {},
-        'svm': {'C': [1, 10, 100],
-                'gamma': [.01, .1],
-                'kernel': ['rbf']},
-        'rf': {'n_estimators': [1, 10, 100],
-               'max_features': [1, 5, 10, 20]}
-    }
-
-    generate_param_grid(steps, param_dict)
+    >>> steps = {
+    ...     'preprocessor': {'skip': None},
+    ...     'classifier': {
+    ...         'svm': SVC(probability=True),
+    ...         'rf': RandomForestClassifier()
+    ...     }
+    ... }
+    >>> param_dict = {
+    ...     'skip': {},
+    ...     'svm': {'C': [1, 10, 100],
+    ...             'gamma': [.01, .1],
+    ...             'kernel': ['rbf']},
+    ...     'rf': {'n_estimators': [1, 10, 100],
+    ...         'max_features': [1, 5, 10, 20]}
+    ... }
+    >>> print(generate_param_grid(steps, param_dict))
     """
 
     final_params = []

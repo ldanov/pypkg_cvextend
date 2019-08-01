@@ -1,4 +1,6 @@
-"""ScoreGrid is a utility class holding information about which scores to use and report """
+"""ScoreGrid is a utility class holding information about which scores 
+to use and report
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -16,49 +18,50 @@ _default_score_selection = [{'score_name': 'Accuracy', 'score_key': 'rank_test_A
                              'score_criteria': 'min', 'scorer': make_scorer(f1_score)}]
 
 
-class ScoreGrid(object):
-    """
-    ScoreGrid
-        Generates a ScoreGrid as required by cvextend.eval_grid.
+class ScoreGrid:
+    """Generates a ScoreGrid as required by `cvextend.EvaluationGrid`
 
     Parameters
     ----------
     score_selection : list of dicts
         A list of dictionaries. Each dictionary contains the following 
         keys and values:
-            - 'score_name' : str
-                name of the score, used for determining best
-            - 'score_key' : str
-                key as found in a fitted sklearn *SearchCV.cv_results_. 
-                Will be used to select the desired value
-            - 'score_criteria' : str or callable
-                function or str function name as taken by 
-                pandas.DataFrame.transform. Will be used to select the 
-                winning value from score_key column's values
-            - 'scorer' : sklearn scorer
-                a callable as returned by sklearn.metrics.make_scorer
 
-    Example
-    -------
-    example_scores = [
-        {
-            'score_name': 'Accuracy',
-            'score_key': 'rank_test_Accuracy',
-            'score_criteria': 'min',
-            'scorer': make_scorer(accuracy_score)
-        },
-        {
-            'score_name': 'F1-Score',
-            'score_key': 'rank_test_F1-Score',
-            'score_criteria': 'min',
-            'scorer': make_scorer(f1_score)
-        }
-    ]
+        * 'score_name' (str)
+            name of the score, used for determining best
+        * 'score_key' (str)
+            key as found in a fitted instance of `BaseSearchCV.cv_results_`.
+            Will be used to select the desired value
+        * 'score_criteria' (str or callable)
+            function or str function name as taken by 
+            `pandas.DataFrame.transform`. Will be used to select the 
+            winning value from score_key column's values
+        * 'scorer' - (sklearn.scorer)
+            a callable as returned by `sklearn.metrics.make_scorer`
 
-    sc = ScoreGrid(example_scores)
-    sc.get_sklearn_dict()
-    sc.score_selection
+    Examples
+    --------
+    >>> from cvextend import ScoreGrid
+    >>> example_scores = [
+    ...     {
+    ...         'score_name': 'Accuracy',
+    ...         'score_key': 'rank_test_Accuracy',
+    ...         'score_criteria': 'min',
+    ...         'scorer': make_scorer(accuracy_score)
+    ...     },
+    ...     {
+    ...         'score_name': 'F1-Score',
+    ...         'score_key': 'rank_test_F1-Score',
+    ...         'score_criteria': 'min',
+    ...         'scorer': make_scorer(f1_score)
+    ...     }
+    ... ]
+    >>> sc = ScoreGrid(example_scores)
+    >>> sc.get_sklearn_dict()
+    >>> sc.score_selection
+
     """
+
     _expected_keys = [
         {
             # user-defined name that will be used in generating result df columnname
@@ -89,10 +92,8 @@ class ScoreGrid(object):
         self.score_selection = score_selection
 
     def get_sklearn_dict(self):
-        """
-        get_sklearn_dict 
-            Returns a dict of scores as expected by sklearn.BaseSearchCV 
-            scoring parameter
+        """Returns a dict of scores as expected by sklearn.BaseSearchCV 
+        scoring parameter
         """
         sklearn_score_dict = {}
         for score in self.score_selection:

@@ -1,4 +1,5 @@
-"""Utility functions for running nested cross-validation of sampling methods"""
+"""Utility functions for running nested cross-validation of sampling methods
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -101,10 +102,7 @@ def test_basic_cv():
         'param_classifier', 'param_classifier__C', 'param_classifier__gamma',
         'param_classifier__kernel', 'param_preprocessor',
         'param_classifier__max_features', 'param_classifier__n_estimators',
-        'params', 'split0_test_H-Measure', 'split1_test_H-Measure',
-        'split2_test_H-Measure', 'split3_test_H-Measure',
-        'split4_test_H-Measure', 'mean_test_H-Measure', 'std_test_H-Measure',
-        'rank_test_H-Measure', 'split0_test_Accuracy', 'split1_test_Accuracy',
+        'params', 'split0_test_Accuracy', 'split1_test_Accuracy',
         'split2_test_Accuracy', 'split3_test_Accuracy', 'split4_test_Accuracy',
         'mean_test_Accuracy', 'std_test_Accuracy', 'rank_test_Accuracy',
         'split0_test_F1-Score', 'split1_test_F1-Score', 'split2_test_F1-Score',

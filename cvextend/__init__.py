@@ -9,6 +9,6 @@ __version__ = '0.2.0'
 __all__ = ['__version__',
            'nested_cv',
            'basic_cv',
-           'EvaluationGrid',
            'generate_param_grid',
-           'ScoreGrid']
+           'ScoreGrid',
+           'EvaluationGrid']

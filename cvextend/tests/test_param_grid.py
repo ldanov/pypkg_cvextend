@@ -1,4 +1,5 @@
-"""Tests for param_grid"""
+"""Tests for param_grid
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -

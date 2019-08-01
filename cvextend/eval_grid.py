@@ -1,4 +1,5 @@
-"""EvaluationGrid class for running nested cross-validation of sampling methods"""
+"""EvaluationGrid class for running nested cross-validation of sampling methods
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -
@@ -10,20 +11,19 @@ import pandas
 from .score_grid import ScoreGrid
 
 
-class EvaluationGrid(object):
-    """
-    EvaluationGrid
-        A class that given a fitted sklearn *SearchCV object returns the 
-        best estimator's performance on a separate test set for each score. 
-        Requires original X and y used for training.
+class EvaluationGrid:
+    """A class that given a fitted `sklearn.BaseSearchCV` object returns
+    the best estimator's performance on a separate test set for each score. 
+    Requires original X and y used for training.
 
     Parameters
     ----------
     gridcv : object
-        A fitted sklearn GridSearchCV or RandomizedSearchCV instance
+        A fitted `sklearn.model_selection.GridSearchCV` or 
+        `sklearn.model_selection.RandomizedSearchCV` instance
 
     score_grid : object
-        A cvextend.ScoreGrid instance
+        A `cvextend.ScoreGrid` instance
 
     """
 
@@ -48,11 +48,9 @@ class EvaluationGrid(object):
         self.final_result = None
 
     def refit_score(self, X_train, y_train, X_test, y_test, **info):
-        """
-        refit_score 
-            Finds the best hyperparameters for each estimator, refitts
-            them on X_train and y_train and reports the performance
-            on X_test and y_test
+        """Finds the best hyperparameters for each estimator, refits
+        them on X_train and y_train and reports the performance on X_test
+        and y_test
 
         Parameters
         ----------
@@ -66,6 +64,7 @@ class EvaluationGrid(object):
             Target relative to X_test
         **info : dict of str
             Info to be added to final score object (e.g. dataset name)
+
         """
         self.get_best_params()
         self.get_fitted_estimators(X_train, y_train)
@@ -74,12 +73,11 @@ class EvaluationGrid(object):
         return self.final_result
 
     def get_best_params(self):
-        """
-        get_best_params
-            Given a BaseSearchCV.cv_results_ object, find the estimator 
-            hyperparameters that had the best performance for each of 
-            the score_grid scores. An estimator is a combination of each
-            Pipeline step type.
+        """Given a `BaseSearchCV.cv_results_` object, find the estimator 
+        hyperparameters that had the best performance for each of the 
+        score_grid scores. An estimator is a combination of each Pipeline 
+        step type.
+
         """
         # TODO: replace pandas with numpy
         eval_df = self.eval_df
@@ -113,11 +111,9 @@ class EvaluationGrid(object):
         return self
 
     def get_fitted_estimators(self, X_train, y_train):
-        """
-        get_fitted_estimators
-            Given an the best estimator hyperparameters explicitly refit
-            each estimator. Is used when refitting after nested cross-
-            validation.
+        """Given an the best estimator hyperparameters explicitly refit
+        each estimator. Is used when refitting after nested cross-
+        validation.
 
         Parameters
         ----------
@@ -125,6 +121,7 @@ class EvaluationGrid(object):
             Array of training data
         y_train : array-like
             Target relative to X_train
+
         """
         if self.scorers_best_params is None:
             ValueError('self.get_best_params() has not been run')
@@ -140,12 +137,10 @@ class EvaluationGrid(object):
         return self
 
     def get_scores(self, X_test, y_test, **info):
-        """
-        get_scores 
-            Given a BaseSearchCV.cv_results_ object with results of all 
-            parameter combinations, return a list of dictionaries 
-            containing the best hyperparameters for each combination of 
-            score and Pipeline step.
+        """Given a `BaseSearchCV.cv_results_` object with results of all 
+        parameter combinations, return a list of dictionaries containing 
+        the best hyperparameters for each combination of score and 
+        Pipeline step. 
 
         Parameters
         ----------
@@ -155,6 +150,7 @@ class EvaluationGrid(object):
             Target relative to X_test
         **info : dict of str
             Info to be added to final score object (e.g. dataset name)
+
         """
         # candidate_list
 
@@ -177,9 +173,7 @@ class EvaluationGrid(object):
 
     @staticmethod
     def add_info(data, **info):
-        """
-        add_info 
-            Add information to a dict-like
+        """Add information to a dict-like
 
         Parameters
         ----------
@@ -187,26 +181,47 @@ class EvaluationGrid(object):
             Object to add information to
         **info : dict
             Key-value pairs to be added
+
         """
         for key, value in info.items():
             data[key] = value
         return data
 
     @staticmethod
-    def process_result(result, step_names):
+    def get_object_fullname(obj):
+        """Given an object, return a string of module.class.name
+
+        Parameters
+        ----------
+        obj : object
+
+        Returns
+        -------
+        fin_str : str
         """
-        process_result
-            Given original results dict or df as given by *SearchCV and 
-            pipeline step names, enchances the results with the type of 
-            each transformer or estimator from each step of the pipeline.
+
+        module = obj.__class__.__module__
+
+        if module is None or module == str.__class__.__module__:
+            fin_str = obj.__class__.__name__
+        else:
+            fin_str = module + '.' + obj.__class__.__name__
+
+        return fin_str
+
+    @staticmethod
+    def process_result(result, step_names):
+        """Given original results dict or df as given by `BaseSearchCV` and 
+        pipeline step names, enchances the results with the type of each 
+        transformer or estimator from each step of the pipeline.
 
         Parameters
         ----------
         result : dict
-            The original results of *SearchCV.cv_results_
+            The original results of `BaseSearchCV.cv_results_`
         step_names : list
             The str names of the pipeline steps of the estimator given 
-            to *SearchCV for fitting.
+            to `BaseSearchCV` for fitting.
 
         Returns
         -------
@@ -214,12 +229,13 @@ class EvaluationGrid(object):
             Enchanced result object
         group_type_keys : list
             List of keys of newly added entries
+
         """
 
         # due to specifying steps in Pipeline as object instances,
         # results contain the instances themselves
         # instead return class name as string
-        obj_fullname = EvaluationGrid._get_object_fullname
+        obj_fullname = EvaluationGrid.get_object_fullname
 
         group_type_keys = []
         for group in step_names:
@@ -232,27 +248,3 @@ class EvaluationGrid(object):
             group_type_keys.append(type_group)
 
         return result, group_type_keys
-
-    @staticmethod
-    def _get_object_fullname(o):
-        """
-        _get_object_fullname 
-            Given an object, return the module.class.name str
-
-        Parameters
-        ----------
-        o : object
-
-        Returns
-        -------
-        fin_str : str
-        """
-
-        module = o.__class__.__module__
-
-        if module is None or module == str.__class__.__module__:
-            fin_str = o.__class__.__name__
-        else:
-            fin_str = module + '.' + o.__class__.__name__
-
-        return fin_str

@@ -1,4 +1,5 @@
-"""Tests for ScoreGrid"""
+"""Tests for ScoreGrid
+"""
 
 # Authors: Lyubomir Danov <->
 # License: -
