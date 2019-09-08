@@ -166,13 +166,13 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    steps : dict</span>
-<span class="sd">        A dictionary of dictionaries. Keys are pipeline steps. Values </span>
-<span class="sd">        are dicts where key is the relevant key from param_dict and </span>
+<span class="sd">        A dictionary of dictionaries. Keys are pipeline steps. Values</span>
+<span class="sd">        are dicts where key is the relevant key from param_dict and</span>
 <span class="sd">        value is an instance of the model/callable.</span>
 <span class="sd">    param_dict : dict</span>
-<span class="sd">        A dictionary of dictionaries. Keys are str names of models. </span>
-<span class="sd">        Values are dicts that contain model params as keys and lists of </span>
-<span class="sd">        values  to permute over as values.</span>
+<span class="sd">        A dictionary of dictionaries. Keys are str names of models.</span>
+<span class="sd">        Values are dicts that contain model params as keys and lists of</span>
+<span class="sd">        values to permute over as values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -186,7 +186,6 @@
 <span class="sd">    &gt;&gt;&gt; from cvextend import generate_param_grid</span>
 <span class="sd">    &gt;&gt;&gt; from sklearn.svm import SVC</span>
 <span class="sd">    &gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier</span>
-<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; steps = {</span>
 <span class="sd">    ...     &#39;preprocessor&#39;: {&#39;skip&#39;: None},</span>
 <span class="sd">    ...     &#39;classifier&#39;: {</span>
@@ -213,10 +212,10 @@
         <span class="c1"># Step_name and estimator_name should correspond</span>
         <span class="c1"># i.e preprocessor must be from pca and select.</span>
         <span class="k">for</span> <span class="n">step_name</span><span class="p">,</span> <span class="n">estimator_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">steps</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">estimator_names</span><span class="p">):</span>
-            
-            <span class="c1"># Grab </span>
+
+            <span class="c1"># Grab</span>
             <span class="n">current_grid</span><span class="p">[</span><span class="n">step_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">steps</span><span class="p">[</span><span class="n">step_name</span><span class="p">][</span><span class="n">estimator_name</span><span class="p">]]</span>
-            
+
             <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">param_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">estimator_name</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># Set parameters corresponding to above estimator</span>
                 <span class="n">current_grid</span><span class="p">[</span><span class="n">step_name</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
