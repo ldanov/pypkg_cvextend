@@ -147,7 +147,8 @@
            <div itemprop="articleBody">
             
   <h1>Source code for cvextend.eval_grid</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;EvaluationGrid class for running nested cross-validation of sampling methods</span>
+<span></span><span class="sd">&quot;&quot;&quot;EvaluationGrid class for running nested cross-validation of sampling</span>
+<span class="sd">methods</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
@@ -162,13 +163,13 @@
 
 <div class="viewcode-block" id="EvaluationGrid"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid">[docs]</a><span class="k">class</span> <span class="nc">EvaluationGrid</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;A class that given a fitted `sklearn.BaseSearchCV` object returns</span>
-<span class="sd">    the best estimator&#39;s performance on a separate test set for each score. </span>
+<span class="sd">    the best estimator&#39;s performance on a separate test set for each score.</span>
 <span class="sd">    Requires original X and y used for training.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    gridcv : object</span>
-<span class="sd">        A fitted `sklearn.model_selection.GridSearchCV` or </span>
+<span class="sd">        A fitted `sklearn.model_selection.GridSearchCV` or</span>
 <span class="sd">        `sklearn.model_selection.RandomizedSearchCV` instance</span>
 
 <span class="sd">    score_grid : object</span>
@@ -222,9 +223,9 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_result</span></div>
 
 <div class="viewcode-block" id="EvaluationGrid.get_best_params"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_best_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object, find the estimator </span>
-<span class="sd">        hyperparameters that had the best performance for each of the </span>
-<span class="sd">        score_grid scores. An estimator is a combination of each Pipeline </span>
+        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object, find the estimator</span>
+<span class="sd">        hyperparameters that had the best performance for each of the</span>
+<span class="sd">        score_grid scores. An estimator is a combination of each Pipeline</span>
 <span class="sd">        step type.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -286,10 +287,10 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="EvaluationGrid.get_scores"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object with results of all </span>
-<span class="sd">        parameter combinations, return a list of dictionaries containing </span>
-<span class="sd">        the best hyperparameters for each combination of score and </span>
-<span class="sd">        Pipeline step. </span>
+        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object with results of all</span>
+<span class="sd">        parameter combinations, return a list of dictionaries containing</span>
+<span class="sd">        the best hyperparameters for each combination of score and</span>
+<span class="sd">        Pipeline step.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -360,8 +361,8 @@
 
 <div class="viewcode-block" id="EvaluationGrid.process_result"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.process_result">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">process_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">step_names</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Given original results dict or df as given by `BaseSearchCV` and </span>
-<span class="sd">        pipeline step names, enchances the results with the type of each </span>
+        <span class="sd">&quot;&quot;&quot;Given original results dict or df as given by `BaseSearchCV` and</span>
+<span class="sd">        pipeline step names, enchances the results with the type of each</span>
 <span class="sd">        transformer or estimator from each step of the pipeline.</span>
 
 <span class="sd">        Parameters</span>
@@ -369,7 +370,7 @@
 <span class="sd">        result : dict</span>
 <span class="sd">            The original results of `BaseSearchCV.cv_results_`</span>
 <span class="sd">        step_names : list</span>
-<span class="sd">            The str names of the pipeline steps of the estimator given </span>
+<span class="sd">            The str names of the pipeline steps of the estimator given</span>
 <span class="sd">            to `BaseSearchCV` for fitting.</span>
 
 <span class="sd">        Returns</span>

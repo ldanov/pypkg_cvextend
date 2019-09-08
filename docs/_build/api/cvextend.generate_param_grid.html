@@ -175,7 +175,7 @@ are dicts where key is the relevant key from param_dict and
 value is an instance of the model/callable.</p></li>
 <li><p><strong>param_dict</strong> (<em>dict</em>) – A dictionary of dictionaries. Keys are str names of models.
 Values are dicts that contain model params as keys and lists of
-values  to permute over as values.</p></li>
+values to permute over as values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -190,9 +190,7 @@ values  to permute over as values.</p></li>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cvextend</span> <span class="k">import</span> <span class="n">generate_param_grid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.svm</span> <span class="k">import</span> <span class="n">SVC</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">steps</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">steps</span> <span class="o">=</span> <span class="p">{</span>
 <span class="gp">... </span>    <span class="s1">&#39;preprocessor&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;skip&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
 <span class="gp">... </span>    <span class="s1">&#39;classifier&#39;</span><span class="p">:</span> <span class="p">{</span>
 <span class="gp">... </span>        <span class="s1">&#39;svm&#39;</span><span class="p">:</span> <span class="n">SVC</span><span class="p">(</span><span class="n">probability</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
