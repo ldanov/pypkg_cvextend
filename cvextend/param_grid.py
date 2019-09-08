@@ -17,13 +17,13 @@ def generate_param_grid(steps: dict, param_dict: dict):
     Parameters
     ----------
     steps : dict
-        A dictionary of dictionaries. Keys are pipeline steps. Values 
-        are dicts where key is the relevant key from param_dict and 
+        A dictionary of dictionaries. Keys are pipeline steps. Values
+        are dicts where key is the relevant key from param_dict and
         value is an instance of the model/callable.
     param_dict : dict
-        A dictionary of dictionaries. Keys are str names of models. 
-        Values are dicts that contain model params as keys and lists of 
-        values  to permute over as values.
+        A dictionary of dictionaries. Keys are str names of models.
+        Values are dicts that contain model params as keys and lists of
+        values to permute over as values.
 
     Returns
     -------
@@ -37,7 +37,6 @@ def generate_param_grid(steps: dict, param_dict: dict):
     >>> from cvextend import generate_param_grid
     >>> from sklearn.svm import SVC
     >>> from sklearn.ensemble import RandomForestClassifier
-    
     >>> steps = {
     ...     'preprocessor': {'skip': None},
     ...     'classifier': {
@@ -64,10 +63,10 @@ def generate_param_grid(steps: dict, param_dict: dict):
         # Step_name and estimator_name should correspond
         # i.e preprocessor must be from pca and select.
         for step_name, estimator_name in zip(steps.keys(), estimator_names):
-            
-            # Grab 
+
+            # Grab
             current_grid[step_name] = [steps[step_name][estimator_name]]
-            
+
             for param, value in param_dict.get(estimator_name).items():
                 # Set parameters corresponding to above estimator
                 current_grid[step_name + '__' + param] = value

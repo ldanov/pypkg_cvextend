@@ -16,7 +16,7 @@ from .eval_grid import EvaluationGrid
 from .score_grid import ScoreGrid
 
 
-def basic_cv(cv_grid, X, y, additional_info={}):
+def basic_cv(cv_grid, X, y, additional_info=None):
     """Run basic cross-validation.
 
     Parameters
@@ -48,13 +48,13 @@ def basic_cv(cv_grid, X, y, additional_info={}):
     --------
     >>> from cvextend import basic_cv
     >>> from cvextend import generate_param_grid
-    >>> from cvextend import ScoreGrid 
+    >>> from cvextend import ScoreGrid
     >>> import pandas
     >>> from sklearn.datasets import load_breast_cancer
     >>> from sklearn.svm import SVC
     >>> from sklearn.ensemble import RandomForestClassifier
     >>> from sklearn.model_selection import GridSearchCV, StratifiedKFold
-    >>> from sklearn.pipeline import Pipeline 
+    >>> from sklearn.pipeline import Pipeline
     >>> scorer_selection = ScoreGrid(scorers)
     >>> sk_score = scorer_selection.get_sklearn_dict()
     >>> pipe = Pipeline([('preprocessor', None), ('classifier', None)])
@@ -74,14 +74,14 @@ def basic_cv(cv_grid, X, y, additional_info={}):
     ...     'rf': {'n_estimators': [1, 10, 100],
     ...         'max_features': [1, 5, 10, 20]}
     ... }
-    >>> params, steps = generate_param_grid(steps=steps, 
+    >>> params, steps = generate_param_grid(steps=steps,
     ...                                     param_dict=param_dict)
-    >>> inner_cv_use = StratifiedKFold(n_splits=5, shuffle=True, 
+    >>> inner_cv_use = StratifiedKFold(n_splits=5, shuffle=True,
     ...                                random_state=0)
-    >>> test_cv_grid = GridSearchCV(estimator=pipe, 
-    ...                             param_grid=params, 
-    ...                             scoring=sk_score, 
-    ...                             cv=inner_cv_use, 
+    >>> test_cv_grid = GridSearchCV(estimator=pipe,
+    ...                             param_grid=params,
+    ...                             scoring=sk_score,
+    ...                             cv=inner_cv_use,
     ...                             refit=False)
     >>> result_basic = basic_cv(test_cv_grid, X, y, )
 
@@ -91,6 +91,9 @@ def basic_cv(cv_grid, X, y, additional_info={}):
         raise TypeError('cv_grid must inherit from sklearn BaseSearchCV')
     if not isinstance(cv_grid.estimator, Pipeline):
         raise TypeError('cv_grid.estimator must inherit from sklearn Pipeline')
+
+    if additional_info is None:
+        additional_info = {}
 
     step_names = list(cv_grid.estimator.named_steps.keys())
     grid = copy.deepcopy(cv_grid)
@@ -107,7 +110,7 @@ def basic_cv(cv_grid, X, y, additional_info={}):
 def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
               outer_cv=StratifiedKFold(n_splits=5, random_state=1),
               score_selection=ScoreGrid(),
-              additional_info={'data_name': 'noname'}):
+              additional_info=None):
     """Run nested cross-validation.
 
     Parameters
@@ -124,7 +127,7 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     inner_cv_seeds : list
         list of seeds, assigned on outer_cv split. Length of list
     outer_cv : object
-        An instance inheriting from `sklearn.BaseCrossValidator`. Used 
+        An instance inheriting from `sklearn.BaseCrossValidator`. Used
         for outer cross-validation split of X. Needs to have the n_splits
         attribute.
     score_selection : object
@@ -144,10 +147,10 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     Returns
     -------
     outer_results : dict
-        Contains the performance of the best hyperparameters of each 
-        estimator (combination of Pipeline steps) on each outer fold. 
-        The best performing hyperparameter combination is picked on a 
-        per score basis from the inner (nested) cross-validation. Only 
+        Contains the performance of the best hyperparameters of each
+        estimator (combination of Pipeline steps) on each outer fold.
+        The best performing hyperparameter combination is picked on a
+        per score basis from the inner (nested) cross-validation. Only
         the score, for which the combination was a winner, is reported.
     inner_results : list of dicts
         Contains all results from nested cross-validation as reported by
@@ -157,7 +160,7 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     --------
     >>> from cvextend import nested_cv
     >>> from cvextend import generate_param_grid
-    >>> from cvextend import ScoreGrid 
+    >>> from cvextend import ScoreGrid
     >>> import pandas
     >>> from sklearn.datasets import load_breast_cancer
     >>> from sklearn.svm import SVC
@@ -183,7 +186,7 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     >>> sk_score = scorer_selection.get_sklearn_dict()
     >>> pipe = Pipeline([('preprocessor', None), ('classifier', None)])
     >>> X, y = load_breast_cancer(return_X_y=True)
-    >>> params, steps = generate_param_grid(steps=steps, 
+    >>> params, steps = generate_param_grid(steps=steps,
     ...                                     param_dict=param_dict)
     >>> inner_cv_use = StratifiedKFold(n_splits=5, shuffle=True,
     ...                                random_state=0)
@@ -195,16 +198,17 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     ...                             refit=False)
     >>> outer_cv_use = StratifiedKFold(n_splits=2, random_state=1,
     ...                                shuffle=True)
+    >>> addit_info = {'dataset_name': "breast_cancer"}
     >>> result_outer, result_inner = nested_cv(cv_grid=test_cv_grid,
     ...                                        X=X, y=y,
     ...                                        score_selection=scorer_selection,
     ...                                        inner_cv_seeds=inner_cv_seeds,
     ...                                        outer_cv=outer_cv_use,
-    ...                                        additional_info={'data_name': "breast_cancer"}
+    ...                                        additional_info=addit_info
     ...                                        )
     >>> print(pandas.DataFrame(result_outer))
     >>> print(pandas.concat([pandas.DataFrame(x) for x in result_inner]))
-    
+
     """
 
     outer_results = []
@@ -219,6 +223,9 @@ def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
     if not isinstance(cv_grid.cv, BaseCrossValidator):
         raise TypeError('inner_cv used in cv_grid must be of '
                         'class sklearn BaseCrossValidator')
+
+    if additional_info is None:
+        additional_info = {'dataset_name': 'unknown'}
 
     outer_fold = 0
     for indices, random_state in zip(outer_cv.split(X, y), inner_cv_seeds):

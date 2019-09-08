@@ -1,4 +1,5 @@
-"""EvaluationGrid class for running nested cross-validation of sampling methods
+"""EvaluationGrid class for running nested cross-validation of sampling
+methods
 """
 
 # Authors: Lyubomir Danov <->
@@ -13,13 +14,13 @@ from .score_grid import ScoreGrid
 
 class EvaluationGrid:
     """A class that given a fitted `sklearn.BaseSearchCV` object returns
-    the best estimator's performance on a separate test set for each score. 
+    the best estimator's performance on a separate test set for each score.
     Requires original X and y used for training.
 
     Parameters
     ----------
     gridcv : object
-        A fitted `sklearn.model_selection.GridSearchCV` or 
+        A fitted `sklearn.model_selection.GridSearchCV` or
         `sklearn.model_selection.RandomizedSearchCV` instance
 
     score_grid : object
@@ -73,9 +74,9 @@ class EvaluationGrid:
         return self.final_result
 
     def get_best_params(self):
-        """Given a `BaseSearchCV.cv_results_` object, find the estimator 
-        hyperparameters that had the best performance for each of the 
-        score_grid scores. An estimator is a combination of each Pipeline 
+        """Given a `BaseSearchCV.cv_results_` object, find the estimator
+        hyperparameters that had the best performance for each of the
+        score_grid scores. An estimator is a combination of each Pipeline
         step type.
 
         """
@@ -137,10 +138,10 @@ class EvaluationGrid:
         return self
 
     def get_scores(self, X_test, y_test, **info):
-        """Given a `BaseSearchCV.cv_results_` object with results of all 
-        parameter combinations, return a list of dictionaries containing 
-        the best hyperparameters for each combination of score and 
-        Pipeline step. 
+        """Given a `BaseSearchCV.cv_results_` object with results of all
+        parameter combinations, return a list of dictionaries containing
+        the best hyperparameters for each combination of score and
+        Pipeline step.
 
         Parameters
         ----------
@@ -211,8 +212,8 @@ class EvaluationGrid:
 
     @staticmethod
     def process_result(result, step_names):
-        """Given original results dict or df as given by `BaseSearchCV` and 
-        pipeline step names, enchances the results with the type of each 
+        """Given original results dict or df as given by `BaseSearchCV` and
+        pipeline step names, enchances the results with the type of each
         transformer or estimator from each step of the pipeline.
 
         Parameters
@@ -220,7 +221,7 @@ class EvaluationGrid:
         result : dict
             The original results of `BaseSearchCV.cv_results_`
         step_names : list
-            The str names of the pipeline steps of the estimator given 
+            The str names of the pipeline steps of the estimator given
             to `BaseSearchCV` for fitting.
 
         Returns
