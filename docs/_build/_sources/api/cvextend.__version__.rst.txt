@@ -1,0 +1,6 @@
+__version__
+===========
+
+.. currentmodule:: cvextend
+
+.. autodata:: __version__
