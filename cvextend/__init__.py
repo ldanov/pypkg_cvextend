@@ -7,7 +7,7 @@ from .eval_grid import EvaluationGrid
 from .param_grid import generate_param_grid
 from .score_grid import ScoreGrid
 
-__version__ = '0.2.0'
+__version__ = 'v0.2.0'
 
 __all__ = [
     '__version__',

@@ -7,8 +7,8 @@ from cvextend.__init__ import __version__
 
 
 def _parse_requirements(filepath):
-    with open(filepath, mode='r') as fp:
-        rqr_file = fp.readlines()
+    with open(filepath, mode='r') as f_p:
+        rqr_file = f_p.readlines()
 
     rqr_cl = [x for x in rqr_file
               if not (re.match(r'^\s*$', x) or re.match(r'^#', x))]
@@ -22,8 +22,8 @@ __DESCRIPTION__ = "Tools to extend sklearn's cross-validation classes and functi
 __AUTHORS__ = 'Lyubomir Danov'
 __URL__ = 'https://github.com/ldanov/pypkg_cvextend'
 __PACKAGES__ = [__PROJECT_NAME__]
-req_loc = os.path.join(os.path.dirname(__file__), 'requirements.txt')
-__INSTALL_REQUIRES__ = _parse_requirements(req_loc)
+_REQ_LOC = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+__INSTALL_REQUIRES__ = _parse_requirements(_REQ_LOC)
 
 setup(name=__PROJECT_NAME__,
       version=__version__,
