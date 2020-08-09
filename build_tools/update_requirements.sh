@@ -1,0 +1,1 @@
+pigar -i ./cvextend/tests/ -p ./requirements.txt -P ./cvextend -o ">="
