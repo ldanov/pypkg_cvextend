@@ -53,7 +53,6 @@ def get_test1_settings():
         cv=StratifiedKFold(shuffle=True, n_splits=5),
         scoring=scorer_selection.get_sklearn_dict(),
         return_train_score=False,
-        iid=False,
         refit=False,
         verbose=1
     )
@@ -92,7 +91,10 @@ def test_nested_cv():
     full_result, _ = nested_cv(**input_settings)
 
     df_full_result = pandas.DataFrame(full_result)
-    assert (df_full_result.columns == full_exp_cols).all()
+
+    print(df_full_result.columns)
+
+    assert (sorted(df_full_result.columns.tolist()) == sorted(full_exp_cols))
     assert df_full_result.shape[0] >= exp_min_rows_outer
 
 
@@ -122,6 +124,8 @@ def test_basic_cv():
     basic_result, _ = basic_cv(**input_settings_sub)
 
     df_basic_result = pandas.DataFrame(basic_result)
+
     print(df_basic_result.columns)
-    assert (df_basic_result.columns == exp_cols).all()
+
+    assert sorted(df_basic_result.columns) == sorted(exp_cols)
     assert df_basic_result.shape[0] >= exp_min_rows_outer

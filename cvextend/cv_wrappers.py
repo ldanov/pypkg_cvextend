@@ -7,9 +7,8 @@
 
 import copy
 
+from sklearn.model_selection import BaseCrossValidator, StratifiedKFold
 from sklearn.model_selection._search import BaseSearchCV
-from sklearn.model_selection import BaseCrossValidator
-from sklearn.model_selection import StratifiedKFold
 from sklearn.pipeline import Pipeline
 
 from .eval_grid import EvaluationGrid
@@ -108,7 +107,9 @@ def basic_cv(cv_grid, X, y, additional_info=None):
 
 
 def nested_cv(cv_grid, X, y, inner_cv_seeds: list,
-              outer_cv=StratifiedKFold(n_splits=5, random_state=1),
+              outer_cv=StratifiedKFold(n_splits=5,
+                                       random_state=1,
+                                       shuffle=True),
               score_selection=ScoreGrid(),
               additional_info=None):
     """Run nested cross-validation.

@@ -7,10 +7,8 @@ to use and report
 
 import collections.abc
 
+from sklearn.metrics import accuracy_score, f1_score, make_scorer
 from sklearn.metrics.scorer import _BaseScorer
-
-from sklearn.metrics import make_scorer
-from sklearn.metrics import accuracy_score, f1_score
 
 _DEFAULT_SCORE_SELECTION = [{'score_name': 'Accuracy', 'score_key': 'rank_test_Accuracy',
                              'score_criteria': 'min', 'scorer': make_scorer(accuracy_score)},
