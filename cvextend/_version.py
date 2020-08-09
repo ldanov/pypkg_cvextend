@@ -1,5 +1,5 @@
 """
-``Implementation`` of the h-measure for classification evaluation
+cvextend extends sklearn's model_selection module.
 """
 # Based on NiLearn package
 # License: simplified BSD
