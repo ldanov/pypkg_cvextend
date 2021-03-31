@@ -5,6 +5,11 @@
 
 Welcome to cvextend's documentation!
 ====================================
+Welcome to cvextend: an extension that helps with cross-validation. 
+
+.. warning:: test warning
+
+:doc:`/docs/_build/_sources/api/cvextend.__version__.rst`
 
   
 .. toctree::
@@ -13,9 +18,3 @@ Welcome to cvextend's documentation!
 
    cvextend
    Installation
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
