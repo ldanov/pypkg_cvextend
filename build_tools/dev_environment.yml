@@ -15,4 +15,5 @@ dependencies:
   - twine=3.2.0=py38h32f6830_0
   - pip:
     - sphinx_automodapi
+    - m2r2
     - -r file:../requirements.txt

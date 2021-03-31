@@ -7,14 +7,9 @@ Welcome to cvextend's documentation!
 ====================================
 Welcome to cvextend: an extension that helps with cross-validation. 
 
-.. warning:: test warning
-
-:doc:`/docs/_build/_sources/api/cvextend.__version__.rst`
-
-  
 .. toctree::
    :caption: Table of Contents
 
-
+   readme
    cvextend
-   Installation
+   
