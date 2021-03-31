@@ -10,6 +10,7 @@ dependencies:
   - python=3.8.5=h4d41432_2_cpython
   - setuptools
   - sphinx=3.2.0=py_0
+  - sphinx-autobuild
   - sphinx_rtd_theme>=0.5.0
   - twine=3.2.0=py38h32f6830_0
   - pip:
