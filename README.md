@@ -15,7 +15,13 @@
 To install the cvextend library use pip:
 
 ```
-pip install hmeasure
+pip install cvextend
+```
+
+or install directly from source:
+
+```
+python setup.py install
 ```
 
 ## Usage
