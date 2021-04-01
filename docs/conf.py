@@ -22,7 +22,8 @@ sys.path.insert(0, mod_dir)
 project = 'cvextend'
 copyright = '2019, Lyubomir Danov'
 author = 'Lyubomir Danov'
-
+from cvextend import __version__
+release = __version__
 
 # -- General configuration ---------------------------------------------------
 autodoc_member_order = 'bysource'
