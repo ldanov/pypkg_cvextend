@@ -1,0 +1,466 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>cvextend.cv_wrappers &mdash; cvextend  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> cvextend
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cvextend.html">cvextend Description</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cvextend</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>cvextend.cv_wrappers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cvextend.cv_wrappers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions for running non- and nested cross-validation of sampling methods</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
+<span class="c1"># License: -</span>
+
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">BaseCrossValidator</span><span class="p">,</span> <span class="n">StratifiedKFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection._search</span> <span class="kn">import</span> <span class="n">BaseSearchCV</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+
+<span class="kn">from</span> <span class="nn">.eval_grid</span> <span class="kn">import</span> <span class="n">EvaluationGrid</span>
+<span class="kn">from</span> <span class="nn">.score_grid</span> <span class="kn">import</span> <span class="n">ScoreGrid</span>
+
+
+<div class="viewcode-block" id="basic_cv"><a class="viewcode-back" href="../../api/cvextend.basic_cv.html#cvextend.basic_cv">[docs]</a><span class="k">def</span> <span class="nf">basic_cv</span><span class="p">(</span><span class="n">cv_grid</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">additional_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run basic cross-validation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cv_grid : object</span>
+<span class="sd">        An instance inheriting from `sklearn.BaseSearchCV`. Its estimator</span>
+<span class="sd">        has to inherit from `sklearn.Pipeline`.</span>
+<span class="sd">    X : array-like</span>
+<span class="sd">        Array of data to be used for training and validation</span>
+<span class="sd">    y : array-like</span>
+<span class="sd">        Target relative to X</span>
+<span class="sd">    additional_info : dict</span>
+<span class="sd">        Any additional information to be inserted in the cv results.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    run_score : dict-like</span>
+<span class="sd">        The `grid.cv_results_` enchanced with additional_info</span>
+<span class="sd">    grid : object</span>
+<span class="sd">        The fitted grid object</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        if cv_grid does not inherit from `sklearn.BaseSearchCV` or</span>
+<span class="sd">        if cv_grid.estimator does not inherit from `sklearn.Pipeline`</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import basic_cv</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import generate_param_grid</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import ScoreGrid</span>
+<span class="sd">    &gt;&gt;&gt; import pandas</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.datasets import load_breast_cancer</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.svm import SVC</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.model_selection import GridSearchCV, StratifiedKFold</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.pipeline import Pipeline</span>
+<span class="sd">    &gt;&gt;&gt; scorer_selection = ScoreGrid(scorers)</span>
+<span class="sd">    &gt;&gt;&gt; sk_score = scorer_selection.get_sklearn_dict()</span>
+<span class="sd">    &gt;&gt;&gt; pipe = Pipeline([(&#39;preprocessor&#39;, None), (&#39;classifier&#39;, None)])</span>
+<span class="sd">    &gt;&gt;&gt; X, y = load_breast_cancer(return_X_y=True)</span>
+<span class="sd">    &gt;&gt;&gt; steps = {</span>
+<span class="sd">    ...     &#39;preprocessor&#39;: {&#39;skip&#39;: None},</span>
+<span class="sd">    ...     &#39;classifier&#39;: {</span>
+<span class="sd">    ...         &#39;svm&#39;: SVC(probability=True),</span>
+<span class="sd">    ...         &#39;rf&#39;: RandomForestClassifier()</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; param_dict = {</span>
+<span class="sd">    ...     &#39;skip&#39;: {},</span>
+<span class="sd">    ...     &#39;svm&#39;: {&#39;C&#39;: [1, 10, 100],</span>
+<span class="sd">    ...             &#39;gamma&#39;: [.01, .1],</span>
+<span class="sd">    ...             &#39;kernel&#39;: [&#39;rbf&#39;]},</span>
+<span class="sd">    ...     &#39;rf&#39;: {&#39;n_estimators&#39;: [1, 10, 100],</span>
+<span class="sd">    ...         &#39;max_features&#39;: [1, 5, 10, 20]}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; params, steps = generate_param_grid(steps=steps,</span>
+<span class="sd">    ...                                     param_dict=param_dict)</span>
+<span class="sd">    &gt;&gt;&gt; inner_cv_use = StratifiedKFold(n_splits=5, shuffle=True,</span>
+<span class="sd">    ...                                random_state=0)</span>
+<span class="sd">    &gt;&gt;&gt; test_cv_grid = GridSearchCV(estimator=pipe,</span>
+<span class="sd">    ...                             param_grid=params,</span>
+<span class="sd">    ...                             scoring=sk_score,</span>
+<span class="sd">    ...                             cv=inner_cv_use,</span>
+<span class="sd">    ...                             refit=False)</span>
+<span class="sd">    &gt;&gt;&gt; result_basic = basic_cv(test_cv_grid, X, y, )</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv_grid</span><span class="p">,</span> <span class="n">BaseSearchCV</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;cv_grid must inherit from sklearn BaseSearchCV&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv_grid</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="n">Pipeline</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;cv_grid.estimator must inherit from sklearn Pipeline&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">additional_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">additional_info</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">step_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cv_grid</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">named_steps</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cv_grid</span><span class="p">)</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">run_score</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">EvaluationGrid</span><span class="o">.</span><span class="n">process_result</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">,</span>
+                                                 <span class="n">step_names</span><span class="p">)</span>
+
+    <span class="n">run_score</span> <span class="o">=</span> <span class="n">EvaluationGrid</span><span class="o">.</span><span class="n">add_info</span><span class="p">(</span><span class="n">run_score</span><span class="p">,</span> <span class="o">**</span><span class="n">additional_info</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">run_score</span><span class="p">,</span> <span class="n">grid</span></div>
+
+
+<div class="viewcode-block" id="nested_cv"><a class="viewcode-back" href="../../api/cvextend.nested_cv.html#cvextend.nested_cv">[docs]</a><span class="k">def</span> <span class="nf">nested_cv</span><span class="p">(</span><span class="n">cv_grid</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">inner_cv_seeds</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+              <span class="n">outer_cv</span><span class="o">=</span><span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                       <span class="n">random_state</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                       <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+              <span class="n">score_selection</span><span class="o">=</span><span class="n">ScoreGrid</span><span class="p">(),</span>
+              <span class="n">additional_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Run nested cross-validation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cv_grid : object</span>
+<span class="sd">        An instance inheriting from `sklearn.BaseSearchCV`. Its estimator</span>
+<span class="sd">        has to inherit from sklearn Pipeline. Its cv parameter must be</span>
+<span class="sd">        set in order to be a CV splitter that has random_state attribute</span>
+<span class="sd">        (https://scikit-learn.org/stable/glossary.html#term-cv-splitter)</span>
+<span class="sd">    X : array-like</span>
+<span class="sd">        Array of data to be used for training, validation and testing</span>
+<span class="sd">    y : array-like</span>
+<span class="sd">        Target relative to X</span>
+<span class="sd">    inner_cv_seeds : list</span>
+<span class="sd">        list of seeds, assigned on outer_cv split. Length of list</span>
+<span class="sd">    outer_cv : object</span>
+<span class="sd">        An instance inheriting from `sklearn.BaseCrossValidator`. Used</span>
+<span class="sd">        for outer cross-validation split of X. Needs to have the n_splits</span>
+<span class="sd">        attribute.</span>
+<span class="sd">    score_selection : object</span>
+<span class="sd">        An instance of ScoreGrid.</span>
+<span class="sd">    additional_info : dict</span>
+<span class="sd">        Any additional information to be inserted in the inner and outer</span>
+<span class="sd">        cv results.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        if outer_cv does not inherit from `sklearn.BaseCrossValidator`</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if the number of splits in outer_cv and length of random_state</span>
+<span class="sd">        differ</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    outer_results : dict</span>
+<span class="sd">        Contains the performance of the best hyperparameters of each</span>
+<span class="sd">        estimator (combination of Pipeline steps) on each outer fold.</span>
+<span class="sd">        The best performing hyperparameter combination is picked on a</span>
+<span class="sd">        per score basis from the inner (nested) cross-validation. Only</span>
+<span class="sd">        the score, for which the combination was a winner, is reported.</span>
+<span class="sd">    inner_results : list of dicts</span>
+<span class="sd">        Contains all results from nested cross-validation as reported by</span>
+<span class="sd">        `BaseSearchCV.cv_results_` for each outer split</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import nested_cv</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import generate_param_grid</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import ScoreGrid</span>
+<span class="sd">    &gt;&gt;&gt; import pandas</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.datasets import load_breast_cancer</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.svm import SVC</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.model_selection import GridSearchCV, StratifiedKFold</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.pipeline import Pipeline</span>
+<span class="sd">    &gt;&gt;&gt; steps = {</span>
+<span class="sd">    ...     &#39;preprocessor&#39;: {&#39;skip&#39;: None},</span>
+<span class="sd">    ...     &#39;classifier&#39;: {</span>
+<span class="sd">    ...         &#39;svm&#39;: SVC(probability=True),</span>
+<span class="sd">    ...         &#39;rf&#39;: RandomForestClassifier()</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; param_dict = {</span>
+<span class="sd">    ...     &#39;skip&#39;: {},</span>
+<span class="sd">    ...     &#39;svm&#39;: {&#39;C&#39;: [1, 10, 100],</span>
+<span class="sd">    ...             &#39;gamma&#39;: [.01, .1],</span>
+<span class="sd">    ...             &#39;kernel&#39;: [&#39;rbf&#39;]},</span>
+<span class="sd">    ...     &#39;rf&#39;: {&#39;n_estimators&#39;: [1, 10, 100],</span>
+<span class="sd">    ...         &#39;max_features&#39;: [1, 5, 10, 20]}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; scorer_selection = ScoreGrid(scorers)</span>
+<span class="sd">    &gt;&gt;&gt; sk_score = scorer_selection.get_sklearn_dict()</span>
+<span class="sd">    &gt;&gt;&gt; pipe = Pipeline([(&#39;preprocessor&#39;, None), (&#39;classifier&#39;, None)])</span>
+<span class="sd">    &gt;&gt;&gt; X, y = load_breast_cancer(return_X_y=True)</span>
+<span class="sd">    &gt;&gt;&gt; params, steps = generate_param_grid(steps=steps,</span>
+<span class="sd">    ...                                     param_dict=param_dict)</span>
+<span class="sd">    &gt;&gt;&gt; inner_cv_use = StratifiedKFold(n_splits=5, shuffle=True,</span>
+<span class="sd">    ...                                random_state=0)</span>
+<span class="sd">    &gt;&gt;&gt; inner_cv_seeds = [1,2]</span>
+<span class="sd">    &gt;&gt;&gt; test_cv_grid = GridSearchCV(estimator=pipe,</span>
+<span class="sd">    ...                             param_grid=params,</span>
+<span class="sd">    ...                             scoring=sk_score,</span>
+<span class="sd">    ...                             cv=inner_cv_use,</span>
+<span class="sd">    ...                             refit=False)</span>
+<span class="sd">    &gt;&gt;&gt; outer_cv_use = StratifiedKFold(n_splits=2, random_state=1,</span>
+<span class="sd">    ...                                shuffle=True)</span>
+<span class="sd">    &gt;&gt;&gt; addit_info = {&#39;dataset_name&#39;: &quot;breast_cancer&quot;}</span>
+<span class="sd">    &gt;&gt;&gt; result_outer, result_inner = nested_cv(cv_grid=test_cv_grid,</span>
+<span class="sd">    ...                                        X=X, y=y,</span>
+<span class="sd">    ...                                        score_selection=scorer_selection,</span>
+<span class="sd">    ...                                        inner_cv_seeds=inner_cv_seeds,</span>
+<span class="sd">    ...                                        outer_cv=outer_cv_use,</span>
+<span class="sd">    ...                                        additional_info=addit_info</span>
+<span class="sd">    ...                                        )</span>
+<span class="sd">    &gt;&gt;&gt; print(pandas.DataFrame(result_outer))</span>
+<span class="sd">    &gt;&gt;&gt; print(pandas.concat([pandas.DataFrame(x) for x in result_inner]))</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">outer_results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">inner_results</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inner_cv_seeds</span><span class="p">)</span> <span class="o">==</span> <span class="n">outer_cv</span><span class="o">.</span><span class="n">n_splits</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">inner_cv_seeds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Length of inner_cv_seeds must equal outer_cv splits&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outer_cv</span><span class="p">,</span> <span class="n">BaseCrossValidator</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;outer_cv must be of class sklearn BaseCrossValidator&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cv_grid</span><span class="o">.</span><span class="n">cv</span><span class="p">,</span> <span class="n">BaseCrossValidator</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;inner_cv used in cv_grid must be of &#39;</span>
+                        <span class="s1">&#39;class sklearn BaseCrossValidator&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">additional_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">additional_info</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dataset_name&#39;</span><span class="p">:</span> <span class="s1">&#39;unknown&#39;</span><span class="p">}</span>
+
+    <span class="n">outer_fold</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">indices</span><span class="p">,</span> <span class="n">random_state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">outer_cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">inner_cv_seeds</span><span class="p">):</span>
+        <span class="n">train_index</span><span class="p">,</span> <span class="n">test_index</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
+        <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">train_index</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">test_index</span><span class="p">]</span>
+
+        <span class="n">grid_inner</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">cv_grid</span><span class="p">)</span>
+        <span class="c1"># TODO better random state assignment</span>
+        <span class="n">grid_inner</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
+
+        <span class="n">add_info_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">additional_info</span><span class="p">)</span>
+        <span class="n">add_info_copy</span><span class="p">[</span><span class="s1">&#39;outer_fold_n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outer_fold</span>
+        <span class="n">add_info_copy</span><span class="p">[</span><span class="s1">&#39;inner_cv_random_state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_state</span>
+
+        <span class="n">inner_score</span><span class="p">,</span> <span class="n">grid_inner_fitted</span> <span class="o">=</span> <span class="n">basic_cv</span><span class="p">(</span><span class="n">grid_inner</span><span class="p">,</span>
+                                                  <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+                                                  <span class="n">add_info_copy</span><span class="p">)</span>
+
+        <span class="n">grid_evaluate</span> <span class="o">=</span> <span class="n">EvaluationGrid</span><span class="p">(</span><span class="n">grid_inner_fitted</span><span class="p">,</span>
+                                       <span class="n">score_selection</span><span class="p">)</span>
+
+        <span class="n">outer_score</span> <span class="o">=</span> <span class="n">grid_evaluate</span><span class="o">.</span><span class="n">refit_score</span><span class="p">(</span><span class="n">X_train</span><span class="o">=</span><span class="n">X_train</span><span class="p">,</span>
+                                                <span class="n">y_train</span><span class="o">=</span><span class="n">y_train</span><span class="p">,</span>
+                                                <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
+                                                <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+                                                <span class="o">**</span><span class="n">add_info_copy</span><span class="p">)</span>
+
+        <span class="n">outer_results</span> <span class="o">=</span> <span class="n">outer_results</span> <span class="o">+</span> <span class="n">outer_score</span>
+        <span class="n">inner_results</span> <span class="o">=</span> <span class="n">inner_results</span> <span class="o">+</span> <span class="p">[</span><span class="n">inner_score</span><span class="p">]</span>
+
+        <span class="n">outer_fold</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">outer_results</span><span class="p">,</span> <span class="n">inner_results</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Lyubomir Danov.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -21,4 +21,4 @@ cvextend extends sklearn's model_selection module.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
 #
 
-__version__ = 'v0.2.1'
+__version__ = 'v0.2.2'

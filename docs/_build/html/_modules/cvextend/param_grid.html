@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>cvextend.param_grid &mdash; cvextend  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> cvextend
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cvextend.html">cvextend Description</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cvextend</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>cvextend.param_grid</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cvextend.param_grid</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility function for generating parameter grid</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
+<span class="c1"># License: -</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">ParameterGrid</span>
+
+
+<span class="c1"># TODO: convert to class</span>
+<span class="c1"># based on https://stackoverflow.com/a/42271829/10960229</span>
+<div class="viewcode-block" id="generate_param_grid"><a class="viewcode-back" href="../../api/cvextend.generate_param_grid.html#cvextend.generate_param_grid">[docs]</a><span class="k">def</span> <span class="nf">generate_param_grid</span><span class="p">(</span><span class="n">steps</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generates sklearn.pipeline-compatible param_grid by permutation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    steps : dict</span>
+<span class="sd">        A dictionary of dictionaries. Keys are pipeline steps. Values</span>
+<span class="sd">        are dicts where key is the relevant key from param_dict and</span>
+<span class="sd">        value is an instance of the model/callable.</span>
+<span class="sd">    param_dict : dict</span>
+<span class="sd">        A dictionary of dictionaries. Keys are str names of models.</span>
+<span class="sd">        Values are dicts that contain model params as keys and lists of</span>
+<span class="sd">        values to permute over as values.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    final_params : list of dicts</span>
+<span class="sd">        Each dict is a permutation of each step&#39;s possible values</span>
+<span class="sd">    step_names : list of str</span>
+<span class="sd">        The key values of steps</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from cvextend import generate_param_grid</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.svm import SVC</span>
+<span class="sd">    &gt;&gt;&gt; from sklearn.ensemble import RandomForestClassifier</span>
+<span class="sd">    &gt;&gt;&gt; steps = {</span>
+<span class="sd">    ...     &#39;preprocessor&#39;: {&#39;skip&#39;: None},</span>
+<span class="sd">    ...     &#39;classifier&#39;: {</span>
+<span class="sd">    ...         &#39;svm&#39;: SVC(probability=True),</span>
+<span class="sd">    ...         &#39;rf&#39;: RandomForestClassifier()</span>
+<span class="sd">    ...     }</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; param_dict = {</span>
+<span class="sd">    ...     &#39;skip&#39;: {},</span>
+<span class="sd">    ...     &#39;svm&#39;: {&#39;C&#39;: [1, 10, 100],</span>
+<span class="sd">    ...             &#39;gamma&#39;: [.01, .1],</span>
+<span class="sd">    ...             &#39;kernel&#39;: [&#39;rbf&#39;]},</span>
+<span class="sd">    ...     &#39;rf&#39;: {&#39;n_estimators&#39;: [1, 10, 100],</span>
+<span class="sd">    ...         &#39;max_features&#39;: [1, 5, 10, 20]}</span>
+<span class="sd">    ... }</span>
+<span class="sd">    &gt;&gt;&gt; print(generate_param_grid(steps, param_dict))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">final_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">step_value_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">steps</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="k">for</span> <span class="n">estimator_names</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">step_value_names</span><span class="p">):</span>
+        <span class="n">current_grid</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Step_name and estimator_name should correspond</span>
+        <span class="c1"># i.e preprocessor must be from pca and select.</span>
+        <span class="k">for</span> <span class="n">step_name</span><span class="p">,</span> <span class="n">estimator_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">steps</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">estimator_names</span><span class="p">):</span>
+
+            <span class="c1"># Grab</span>
+            <span class="n">current_grid</span><span class="p">[</span><span class="n">step_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">steps</span><span class="p">[</span><span class="n">step_name</span><span class="p">][</span><span class="n">estimator_name</span><span class="p">]]</span>
+
+            <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">param_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">estimator_name</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1"># Set parameters corresponding to above estimator</span>
+                <span class="n">current_grid</span><span class="p">[</span><span class="n">step_name</span> <span class="o">+</span> <span class="s1">&#39;__&#39;</span> <span class="o">+</span> <span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># Append this dictionary to final params</span>
+        <span class="n">final_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_grid</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ParameterGrid</span><span class="p">(</span><span class="n">final_params</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">e</span>
+    <span class="n">step_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">steps</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">final_params</span><span class="p">,</span> <span class="n">step_names</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Lyubomir Danov.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

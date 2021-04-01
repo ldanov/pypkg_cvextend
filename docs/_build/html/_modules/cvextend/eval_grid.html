@@ -1,0 +1,454 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>cvextend.eval_grid &mdash; cvextend  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> cvextend
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cvextend.html">cvextend Description</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">cvextend</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>cvextend.eval_grid</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for cvextend.eval_grid</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;EvaluationGrid class for running nested cross-validation of sampling</span>
+<span class="sd">methods</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Authors: Lyubomir Danov &lt;-&gt;</span>
+<span class="c1"># License: -</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="kn">from</span> <span class="nn">.score_grid</span> <span class="kn">import</span> <span class="n">ScoreGrid</span>
+
+
+<div class="viewcode-block" id="EvaluationGrid"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid">[docs]</a><span class="k">class</span> <span class="nc">EvaluationGrid</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A class that given a fitted `sklearn.BaseSearchCV` object returns</span>
+<span class="sd">    the best estimator&#39;s performance on a separate test set for each score.</span>
+<span class="sd">    Requires original X and y used for training.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gridcv : object</span>
+<span class="sd">        A fitted `sklearn.model_selection.GridSearchCV` or</span>
+<span class="sd">        `sklearn.model_selection.RandomizedSearchCV` instance</span>
+
+<span class="sd">    score_grid : object</span>
+<span class="sd">        A `cvextend.ScoreGrid` instance</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gridcv</span><span class="p">,</span> <span class="n">score_grid</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">score_grid</span><span class="p">,</span> <span class="n">ScoreGrid</span><span class="p">):</span>
+            <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;score_grid does not inherit from ScoreGrid!&quot;</span><span class="p">)</span>
+
+        <span class="n">group_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">gridcv</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">named_steps</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">eval_df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">gridcv</span><span class="o">.</span><span class="n">cv_results_</span><span class="p">))</span>
+        <span class="n">eval_df</span><span class="p">,</span> <span class="n">group_type_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_result</span><span class="p">(</span><span class="n">eval_df</span><span class="p">,</span> <span class="n">group_names</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_df</span> <span class="o">=</span> <span class="n">eval_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_type_keys</span> <span class="o">=</span> <span class="n">group_type_keys</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cv_estimator</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">gridcv</span><span class="o">.</span><span class="n">estimator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_grid</span> <span class="o">=</span> <span class="n">score_grid</span>
+
+        <span class="c1"># Instantiate for state tracking</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scorers_best_params</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_estimators</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_result</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="EvaluationGrid.refit_score"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.refit_score">[docs]</a>    <span class="k">def</span> <span class="nf">refit_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finds the best hyperparameters for each estimator, refits</span>
+<span class="sd">        them on X_train and y_train and reports the performance on X_test</span>
+<span class="sd">        and y_test</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_train : array-like</span>
+<span class="sd">            Array of training data</span>
+<span class="sd">        y_train : array-like</span>
+<span class="sd">            Target relative to X_train</span>
+<span class="sd">        X_test : array-like</span>
+<span class="sd">            Array of testing data</span>
+<span class="sd">        y_test : array-like</span>
+<span class="sd">            Target relative to X_test</span>
+<span class="sd">        **info : dict of str</span>
+<span class="sd">            Info to be added to final score object (e.g. dataset name)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_best_params</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_fitted_estimators</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_scores</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_result</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.get_best_params"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_best_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object, find the estimator</span>
+<span class="sd">        hyperparameters that had the best performance for each of the</span>
+<span class="sd">        score_grid scores. An estimator is a combination of each Pipeline</span>
+<span class="sd">        step type.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: replace pandas with numpy</span>
+        <span class="n">eval_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_df</span>
+
+        <span class="c1"># which columns to select</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">eval_df</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;param_&#39;</span><span class="p">)]</span>
+        <span class="n">retr_cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_type_keys</span> <span class="o">+</span> <span class="n">params</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span>
+
+        <span class="n">per_score</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">score_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_grid</span><span class="o">.</span><span class="n">score_selection</span><span class="p">:</span>
+
+            <span class="n">score_key</span> <span class="o">=</span> <span class="n">score_type</span><span class="p">[</span><span class="s1">&#39;score_key&#39;</span><span class="p">]</span>
+            <span class="n">score_criteria</span> <span class="o">=</span> <span class="n">score_type</span><span class="p">[</span><span class="s1">&#39;score_criteria&#39;</span><span class="p">]</span>
+
+            <span class="c1"># for each unique value in each group from groups</span>
+            <span class="c1"># return entries where score_key corresponds to score_criteria</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">eval_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_type_keys</span><span class="p">)[</span><span class="n">score_key</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">score_criteria</span><span class="p">)</span>
+
+            <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">eval_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">eval_df</span><span class="p">[</span><span class="n">score_key</span><span class="p">]</span> <span class="o">==</span> <span class="n">idx</span><span class="p">,</span> <span class="n">retr_cols</span><span class="p">]</span>
+            <span class="n">score_best_params</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tmp_df</span><span class="p">)</span>
+
+            <span class="c1"># return score_name and scorer itself for ease of scoring</span>
+            <span class="n">score_best_params</span><span class="p">[</span><span class="s1">&#39;score_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_type</span><span class="p">[</span><span class="s1">&#39;score_name&#39;</span><span class="p">]</span>
+            <span class="n">score_best_params</span><span class="p">[</span><span class="s1">&#39;scorer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_type</span><span class="p">[</span><span class="s1">&#39;scorer&#39;</span><span class="p">]</span>
+
+            <span class="n">per_score</span> <span class="o">=</span> <span class="n">per_score</span> <span class="o">+</span> <span class="n">score_best_params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="s1">&#39;records&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scorers_best_params</span> <span class="o">=</span> <span class="n">per_score</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.get_fitted_estimators"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_fitted_estimators">[docs]</a>    <span class="k">def</span> <span class="nf">get_fitted_estimators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given an the best estimator hyperparameters explicitly refit</span>
+<span class="sd">        each estimator. Is used when refitting after nested cross-</span>
+<span class="sd">        validation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_train : array-like</span>
+<span class="sd">            Array of training data</span>
+<span class="sd">        y_train : array-like</span>
+<span class="sd">            Target relative to X_train</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scorers_best_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;self.get_best_params() has not been run&#39;</span><span class="p">)</span>
+
+        <span class="n">scorers_best_params</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scorers_best_params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">best_param</span> <span class="ow">in</span> <span class="n">scorers_best_params</span><span class="p">:</span>
+            <span class="n">cloned_estim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cv_estimator</span><span class="p">)</span>
+            <span class="n">cloned_estim</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">best_param</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">])</span>
+            <span class="n">cloned_estim</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+            <span class="n">best_param</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cloned_estim</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted_estimators</span> <span class="o">=</span> <span class="n">scorers_best_params</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.get_scores"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_scores">[docs]</a>    <span class="k">def</span> <span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a `BaseSearchCV.cv_results_` object with results of all</span>
+<span class="sd">        parameter combinations, return a list of dictionaries containing</span>
+<span class="sd">        the best hyperparameters for each combination of score and</span>
+<span class="sd">        Pipeline step.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X_test : array-like</span>
+<span class="sd">            Array of testing data</span>
+<span class="sd">        y_test : array-like</span>
+<span class="sd">            Target relative to X_test</span>
+<span class="sd">        **info : dict of str</span>
+<span class="sd">            Info to be added to final score object (e.g. dataset name)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># candidate_list</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted_estimators</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;self.get_fitted_estimators(X, y) has not been run&#39;</span><span class="p">)</span>
+
+        <span class="n">final_result</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fitted_estimators</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">estimator_dict</span> <span class="ow">in</span> <span class="n">final_result</span><span class="p">:</span>
+
+            <span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator_dict</span><span class="p">[</span><span class="s1">&#39;estimator&#39;</span><span class="p">]</span>
+            <span class="n">scorer</span> <span class="o">=</span> <span class="n">estimator_dict</span><span class="p">[</span><span class="s1">&#39;scorer&#39;</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">scorer</span><span class="p">(</span><span class="n">estimator</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+
+            <span class="n">estimator_dict</span><span class="p">[</span><span class="s1">&#39;score_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+
+            <span class="n">estimator_dict</span> <span class="o">=</span> <span class="n">EvaluationGrid</span><span class="o">.</span><span class="n">add_info</span><span class="p">(</span><span class="n">estimator_dict</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_result</span> <span class="o">=</span> <span class="n">final_result</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.add_info"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.add_info">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_info</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">info</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add information to a dict-like</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : dict-like</span>
+<span class="sd">            Object to add information to</span>
+<span class="sd">        **info : dict</span>
+<span class="sd">            Key-value pairs to be added</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.get_object_fullname"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.get_object_fullname">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_object_fullname</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given an object, return a string of module.class.name</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        obj : object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        fin_str : str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">module</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span>
+
+        <span class="k">if</span> <span class="n">module</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">module</span> <span class="o">==</span> <span class="nb">str</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">:</span>
+            <span class="n">fin_str</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fin_str</span> <span class="o">=</span> <span class="n">module</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+        <span class="k">return</span> <span class="n">fin_str</span></div>
+
+<div class="viewcode-block" id="EvaluationGrid.process_result"><a class="viewcode-back" href="../../api/cvextend.EvaluationGrid.html#cvextend.EvaluationGrid.process_result">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">process_result</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">step_names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given original results dict or df as given by `BaseSearchCV` and</span>
+<span class="sd">        pipeline step names, enchances the results with the type of each</span>
+<span class="sd">        transformer or estimator from each step of the pipeline.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        result : dict</span>
+<span class="sd">            The original results of `BaseSearchCV.cv_results_`</span>
+<span class="sd">        step_names : list</span>
+<span class="sd">            The str names of the pipeline steps of the estimator given</span>
+<span class="sd">            to `BaseSearchCV` for fitting.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        result : dict</span>
+<span class="sd">            Enchanced result object</span>
+<span class="sd">        group_type_keys : list</span>
+<span class="sd">            List of keys of newly added entries</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># due to specifying steps in Pipeline as object instances,</span>
+        <span class="c1"># results contain the instances themselves</span>
+        <span class="c1"># instead return class name as string</span>
+        <span class="n">obj_fullname</span> <span class="o">=</span> <span class="n">EvaluationGrid</span><span class="o">.</span><span class="n">get_object_fullname</span>
+
+        <span class="n">group_type_keys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">step_names</span><span class="p">:</span>
+            <span class="n">type_group</span> <span class="o">=</span> <span class="s1">&#39;type_&#39;</span> <span class="o">+</span> <span class="n">group</span>
+            <span class="n">param_group</span> <span class="o">=</span> <span class="s1">&#39;param_&#39;</span> <span class="o">+</span> <span class="n">group</span>
+
+            <span class="n">classes</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">param_group</span><span class="p">]</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">type_group</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj_fullname</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">]</span>
+
+            <span class="n">group_type_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">type_group</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="n">group_type_keys</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Lyubomir Danov.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

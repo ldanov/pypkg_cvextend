@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>EvaluationGrid &mdash; cvextend  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="ScoreGrid" href="cvextend.ScoreGrid.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> cvextend
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">README</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../cvextend.html">cvextend Description</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cvextend.html#functions">Functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../cvextend.html#classes">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="cvextend.ScoreGrid.html">ScoreGrid</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">EvaluationGrid</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cvextend</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../cvextend.html">cvextend Description</a> &raquo;</li>
+        
+      <li>EvaluationGrid</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/api/cvextend.EvaluationGrid.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="evaluationgrid">
+<h1>EvaluationGrid<a class="headerlink" href="#evaluationgrid" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="cvextend.EvaluationGrid">
+<em class="property">class </em><code class="sig-prename descclassname">cvextend.</code><code class="sig-name descname">EvaluationGrid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gridcv</span></em>, <em class="sig-param"><span class="n">score_grid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class that given a fitted <cite>sklearn.BaseSearchCV</cite> object returns
+the best estimator’s performance on a separate test set for each score.
+Requires original X and y used for training.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridcv</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>) – A fitted <cite>sklearn.model_selection.GridSearchCV</cite> or
+<cite>sklearn.model_selection.RandomizedSearchCV</cite> instance</p></li>
+<li><p><strong>score_grid</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>) – A <cite>cvextend.ScoreGrid</cite> instance</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Methods Summary</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.add_info" title="cvextend.EvaluationGrid.add_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_info</span></code></a>(data, **info)</p></td>
+<td><p>Add information to a dict-like</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.get_best_params" title="cvextend.EvaluationGrid.get_best_params"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_best_params</span></code></a>()</p></td>
+<td><p>Given a <cite>BaseSearchCV.cv_results_</cite> object, find the estimator hyperparameters that had the best performance for each of the score_grid scores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.get_fitted_estimators" title="cvextend.EvaluationGrid.get_fitted_estimators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fitted_estimators</span></code></a>(X_train, y_train)</p></td>
+<td><p>Given an the best estimator hyperparameters explicitly refit each estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.get_object_fullname" title="cvextend.EvaluationGrid.get_object_fullname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_object_fullname</span></code></a>(obj)</p></td>
+<td><p>Given an object, return a string of module.class.name</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.get_scores" title="cvextend.EvaluationGrid.get_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_scores</span></code></a>(X_test, y_test, **info)</p></td>
+<td><p>Given a <cite>BaseSearchCV.cv_results_</cite> object with results of all parameter combinations, return a list of dictionaries containing the best hyperparameters for each combination of score and Pipeline step.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.process_result" title="cvextend.EvaluationGrid.process_result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_result</span></code></a>(result, step_names)</p></td>
+<td><p>Given original results dict or df as given by <cite>BaseSearchCV</cite> and pipeline step names, enchances the results with the type of each transformer or estimator from each step of the pipeline.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cvextend.EvaluationGrid.refit_score" title="cvextend.EvaluationGrid.refit_score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refit_score</span></code></a>(X_train, y_train, X_test, …)</p></td>
+<td><p>Finds the best hyperparameters for each estimator, refits them on X_train and y_train and reports the performance on X_test and y_test</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods Documentation</p>
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.add_info">
+<em class="property">static </em><code class="sig-name descname">add_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">info</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.add_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.add_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add information to a dict-like</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict-like</span></code>) – Object to add information to</p></li>
+<li><p><strong>**info</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Key-value pairs to be added</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.get_best_params">
+<code class="sig-name descname">get_best_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.get_best_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.get_best_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a <cite>BaseSearchCV.cv_results_</cite> object, find the estimator
+hyperparameters that had the best performance for each of the
+score_grid scores. An estimator is a combination of each Pipeline
+step type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.get_fitted_estimators">
+<code class="sig-name descname">get_fitted_estimators</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X_train</span></em>, <em class="sig-param"><span class="n">y_train</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.get_fitted_estimators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.get_fitted_estimators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an the best estimator hyperparameters explicitly refit
+each estimator. Is used when refitting after nested cross-
+validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array of training data</p></li>
+<li><p><strong>y_train</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Target relative to X_train</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.get_object_fullname">
+<em class="property">static </em><code class="sig-name descname">get_object_fullname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.get_object_fullname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.get_object_fullname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an object, return a string of module.class.name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code>)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fin_str</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.get_scores">
+<code class="sig-name descname">get_scores</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X_test</span></em>, <em class="sig-param"><span class="n">y_test</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">info</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.get_scores"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.get_scores" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a <cite>BaseSearchCV.cv_results_</cite> object with results of all
+parameter combinations, return a list of dictionaries containing
+the best hyperparameters for each combination of score and
+Pipeline step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_test</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array of testing data</p></li>
+<li><p><strong>y_test</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Target relative to X_test</p></li>
+<li><p><strong>**info</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Info to be added to final score object (e.g. dataset name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.process_result">
+<em class="property">static </em><code class="sig-name descname">process_result</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">result</span></em>, <em class="sig-param"><span class="n">step_names</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.process_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.process_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given original results dict or df as given by <cite>BaseSearchCV</cite> and
+pipeline step names, enchances the results with the type of each
+transformer or estimator from each step of the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – The original results of <cite>BaseSearchCV.cv_results_</cite></p></li>
+<li><p><strong>step_names</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – The str names of the pipeline steps of the estimator given
+to <cite>BaseSearchCV</cite> for fitting.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>result</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>) – Enchanced result object</p></li>
+<li><p><strong>group_type_keys</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>) – List of keys of newly added entries</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="cvextend.EvaluationGrid.refit_score">
+<code class="sig-name descname">refit_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X_train</span></em>, <em class="sig-param"><span class="n">y_train</span></em>, <em class="sig-param"><span class="n">X_test</span></em>, <em class="sig-param"><span class="n">y_test</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">info</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cvextend/eval_grid.html#EvaluationGrid.refit_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cvextend.EvaluationGrid.refit_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the best hyperparameters for each estimator, refits
+them on X_train and y_train and reports the performance on X_test
+and y_test</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array of training data</p></li>
+<li><p><strong>y_train</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Target relative to X_train</p></li>
+<li><p><strong>X_test</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Array of testing data</p></li>
+<li><p><strong>y_test</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">array-like</span></code>) – Target relative to X_test</p></li>
+<li><p><strong>**info</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Info to be added to final score object (e.g. dataset name)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="cvextend.ScoreGrid.html" class="btn btn-neutral float-left" title="ScoreGrid" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, Lyubomir Danov.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
